@@ -1,0 +1,11 @@
+-- Data Module Initial Migration
+-- TODO: Add your data-related migrations here
+
+-- Example:
+-- CREATE TABLE IF NOT EXISTS data_items (
+--   id INT PRIMARY KEY AUTO_INCREMENT,
+--   type VARCHAR(100) NOT NULL,
+--   name VARCHAR(255) NOT NULL,
+--   value TEXT,
+--   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
