@@ -1,0 +1,11 @@
+-- Game Module Initial Migration
+-- TODO: Add your game-related migrations here
+
+-- Example:
+-- CREATE TABLE IF NOT EXISTS items (
+--   id INT PRIMARY KEY AUTO_INCREMENT,
+--   name VARCHAR(255) NOT NULL,
+--   category VARCHAR(100),
+--   price INT DEFAULT 0,
+--   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
