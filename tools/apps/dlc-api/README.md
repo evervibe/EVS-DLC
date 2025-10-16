@@ -21,7 +21,7 @@ A hybrid backend API built with NestJS + Fastify adapter, providing a structured
 ## Project Structure
 
 ```
-apps/dlc-api/
+tools/apps/dlc-api/
 ├── src/
 │   ├── modules/
 │   │   ├── auth/          # Authentication module
@@ -57,7 +57,7 @@ apps/dlc-api/
 
 1. Navigate to the project directory:
 ```bash
-cd apps/dlc-api
+cd tools/apps/dlc-api
 ```
 
 2. Install dependencies:

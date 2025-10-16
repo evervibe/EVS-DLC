@@ -1,7 +1,7 @@
 # Implementation Summary - DLC API Hybrid Backend
 
 ## Overview
-Successfully scaffolded a hybrid backend using NestJS + Fastify adapter in `apps/dlc-api/` directory.
+Successfully scaffolded a hybrid backend using NestJS + Fastify adapter in `tools/apps/dlc-api/` directory.
 
 ## Version
 **0.0.1-alpha**
@@ -10,7 +10,7 @@ Successfully scaffolded a hybrid backend using NestJS + Fastify adapter in `apps
 
 ### 1. Project Structure (47 files)
 ```
-apps/dlc-api/
+tools/apps/dlc-api/
 ├── src/                    # Source code (30 TypeScript files)
 │   ├── modules/           # Feature modules
 │   │   ├── auth/         # Authentication (4 files)
@@ -143,7 +143,7 @@ SQL migration placeholders in `migrations/`:
 
 ### Setup
 ```bash
-cd apps/dlc-api
+cd tools/apps/dlc-api
 npm install
 cp .env.example .env
 # Edit .env with your database credentials
