@@ -40,8 +40,15 @@ export const isEmpty = (value: any): boolean => {
 };
 
 /**
- * Deep clone an object
+ * Deep clone an object using structuredClone (Node 17+)
+ * Falls back to JSON method for compatibility but has limitations
+ * (doesn't handle functions, undefined values in arrays, etc.)
  */
 export const deepClone = <T>(obj: T): T => {
+  // Use structuredClone if available (Node 17+)
+  if (typeof structuredClone === 'function') {
+    return structuredClone(obj);
+  }
+  // Fallback to JSON method (has limitations)
   return JSON.parse(JSON.stringify(obj));
 };

@@ -34,7 +34,7 @@ async function bootstrap() {
   // Start listening
   await app.listen(env.apiPort, '0.0.0.0');
   
-  console.log(`✓ API läuft auf Port ${env.apiPort}`);
+  console.log(`✓ API running on port ${env.apiPort}`);
   console.log(`✓ Environment: ${env.nodeEnv}`);
   console.log(`✓ Fastify adapter enabled`);
 }

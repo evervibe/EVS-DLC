@@ -29,15 +29,20 @@ export const dbPools: DatabasePools = {
 };
 
 export async function testDbConnections(): Promise<void> {
-  const databases = ['auth', 'game', 'data', 'post'] as const;
+  const databases = [
+    { name: 'auth', config: env.dbAuth },
+    { name: 'game', config: env.dbGame },
+    { name: 'data', config: env.dbData },
+    { name: 'post', config: env.dbPost },
+  ];
   
-  for (const db of databases) {
+  for (const { name, config } of databases) {
     try {
-      const connection = await dbPools[db].getConnection();
-      console.log(`✓ Database connection successful: ${db} (${env[`db${db.charAt(0).toUpperCase() + db.slice(1)}` as keyof typeof env]['database']})`);
+      const connection = await dbPools[name as keyof DatabasePools].getConnection();
+      console.log(`✓ Database connection successful: ${name} (${config.database})`);
       connection.release();
     } catch (error) {
-      console.error(`✗ Database connection failed: ${db}`, error.message);
+      console.error(`✗ Database connection failed: ${name}`, error.message);
       throw error;
     }
   }
