@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: evs-lc-${SERVER:-dev}-mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
+      MYSQL_APP_USER: ${MYSQL_APP_USER:-}
+      MYSQL_APP_PASSWORD: ${MYSQL_APP_PASSWORD:-}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    command: [
+      "mysqld",
+      "--max_allowed_packet=1G",
+      "--net_read_timeout=600",
+      "--net_write_timeout=600",
+      "--connect_timeout=60",
+      "--wait_timeout=28800",
+      "--interactive_timeout=28800"
+    ]
+    volumes:
+      # Persistente Datenbankdaten als Docker Volume (nicht im Repo)
+      - mysql-data:/var/lib/mysql
+      # Server-spezifische Init-Skripte/Dumps einspielen
+      - ./servers/${SERVER:-dev}:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p${MYSQL_ROOT_PASSWORD:-secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  adminer:
+    image: adminer:4
+    container_name: evs-lc-${SERVER:-dev}-adminer
+    depends_on:
+      - mysql
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+volumes:
+  mysql-data:
+    # Individueller Volumename je Server über ENV, verhindert Daten im Repo
+    name: evs-lc-${SERVER:-dev}-mysql-data

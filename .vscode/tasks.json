@@ -1,0 +1,55 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "DB: MySQL up (compose)",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"-f",
+				"DB/game/docker-compose.yml",
+				"up",
+				"-d"
+			],
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "DB: MySQL down (compose)",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"-f",
+				"DB/game/docker-compose.yml",
+				"down"
+			],
+			"group": "build"
+		},
+		{
+			"label": "DB: Up (compose)",
+			"type": "shell",
+			"command": "docker",
+			"args": [
+				"compose",
+				"-f",
+				"DB/game/docker-compose.yml",
+				"up",
+				"-d",
+				"--build"
+			],
+			"group": "build"
+		}
+        ,
+        {
+          "label": "Ops UI: Start",
+          "type": "shell",
+          "options": { "cwd": "${workspaceFolder}/tools/ops-ui" },
+          "command": "cp -n .env.example .env 2>/dev/null || true && npm i && npm run dev",
+          "problemMatcher": []
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Local environment files for docker-compose
+# Keep .env.example tracked; ignore real local envs
+game/.env
+game/.env.local
+game/.env.*.local
+
+# Backups created by game/scripts/backup.sh
+# Example: game/backups/dev/20250101-120000/db_auth.sql.gz
+game/backups/
+
+# Ignore all server-specific dump files (per-server data)
+# These are imported by servers/*/010_import.sh and should not be committed
+game/servers/*/dumps/*
+# Allow optional placeholders if you want to keep empty folders in Git
+!game/servers/*/dumps/.gitkeep
+!game/servers/*/dumps/.keep
