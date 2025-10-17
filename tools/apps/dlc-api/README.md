@@ -204,7 +204,7 @@ npm run introspect
   - `DB_DATA_HOST` - Database host (default: localhost)
   - `DB_DATA_PORT` - Database port (default: 3306)
   - `DB_DATA_USER` - Database user (default: root)
-  - `DB_DATA_PASSWORD` - Database password
+  - `DB_DATA_PASSWORD` - Database password (⚠️ **required**, no default)
   - `DB_DATA_NAME` - Database name (default: db_data)
 
 **What it does:**
@@ -215,9 +215,19 @@ npm run introspect
 - Generate migration snapshot and documentation
 
 **Error Handling:**
-- If database connection fails, the script will exit with an error message
-- Ensure your database is running and credentials are correct
-- Check firewall settings if connecting to a remote database
+If the script fails, check for these common issues:
+- **Connection timeout**: Database is not accessible at the specified host/port
+  - Verify database is running: `mysql -h localhost -u root -p`
+  - Check firewall settings for remote connections
+- **Authentication failure**: Incorrect username or password
+  - Error: `Access denied for user 'user'@'host'`
+  - Verify credentials in `.env` file
+- **Database not found**: Database name doesn't exist
+  - Error: `Unknown database 'db_name'`
+  - Create database or update `DB_DATA_NAME` in `.env`
+- **No tables found**: Database exists but is empty
+  - Script will complete but generate no entities
+  - Populate database with schema first
 
 #### Using Mock Data
 For development without database access:
@@ -226,7 +236,14 @@ For development without database access:
 npm run generate:mock
 ```
 
-This generates sample entities for common game tables (t_item, t_string, t_skill, etc.) without requiring database connection. Perfect for:
+This generates sample entities for the following tables without requiring database connection:
+- `t_item` - Game items (6 columns)
+- `t_string` - String localization (4 columns)
+- `t_skill` - Skills (5 columns)
+- `t_skilllevel` - Skill levels (5 columns)
+- `t_character` - Characters (6 columns)
+
+Perfect for:
 - Initial development
 - CI/CD environments without database access
 - Testing the API structure
