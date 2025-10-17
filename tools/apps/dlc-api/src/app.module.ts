@@ -21,7 +21,10 @@ import { CacheModule } from './core/cache/cache.module';
         API_PORT: Joi.number().default(30089),
         NODE_ENV: Joi.string().default('development'),
         JWT_SECRET: Joi.string().default('dev-secret'),
-        
+        JWT_EXPIRES_IN: Joi.number().default(3600),
+        ADMIN_USERNAME: Joi.string().default('admin'),
+        ADMIN_PASSWORD: Joi.string().allow('').default('admin'),
+
         // Auth Database
         DB_AUTH_HOST: Joi.string().default('localhost'),
         DB_AUTH_PORT: Joi.number().default(3306),

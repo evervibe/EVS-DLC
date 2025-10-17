@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import helmet from '@fastify/helmet';
+import rateLimit from '@fastify/rate-limit';
 import { AppModule } from './app.module';
 import { env } from './config/env';
 import { testDbConnections } from './common/db';
@@ -26,6 +28,15 @@ async function bootstrap() {
       logger: false,
     }),
   );
+
+  await app.register(helmet, {
+    contentSecurityPolicy: false,
+  });
+
+  await app.register(rateLimit, {
+    max: 100,
+    timeWindow: '1 minute',
+  });
 
   // Enable CORS
   app.enableCors({

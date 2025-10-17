@@ -25,6 +25,11 @@ export interface EnvConfig {
   apiPort: number;
   nodeEnv: string;
   jwtSecret: string;
+  jwtExpiresIn: number;
+  admin: {
+    username: string;
+    password: string;
+  };
   dbAuth: DatabaseConfig;
   dbGame: DatabaseConfig;
   dbData: DatabaseConfig;
@@ -56,7 +61,12 @@ export const env: EnvConfig = {
   apiPort: getEnvNumber('API_PORT', 30089),
   nodeEnv: getEnvValue('NODE_ENV', 'development'),
   jwtSecret: getEnvValue('JWT_SECRET', 'dev-secret'),
-  
+  jwtExpiresIn: getEnvNumber('JWT_EXPIRES_IN', 3600),
+  admin: {
+    username: getEnvValue('ADMIN_USERNAME', 'admin'),
+    password: getEnvValue('ADMIN_PASSWORD', 'admin'),
+  },
+
   dbAuth: {
     host: getEnvValue('DB_AUTH_HOST', 'localhost'),
     port: getEnvNumber('DB_AUTH_PORT', 3306),

@@ -1,44 +1,56 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../../../common/middleware';
+import { buildSuccessResponse } from '../../../common/utils';
+import { ListQueryDto } from '../dto/list-query.dto';
 import { TItemService } from './t_item.service';
-import { TItemEntity } from './t_item.entity';
+import { CreateTItemDto, UpdateTItemDto } from './dto/t_item.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('data/t_item')
 export class TItemController {
   constructor(private readonly service: TItemService) {}
 
   @Get()
-  async findAll(
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
-  ): Promise<TItemEntity[]> {
-    const limitNum = limit ? parseInt(limit, 10) : undefined;
-    const offsetNum = offset ? parseInt(offset, 10) : undefined;
-    return this.service.findAll(
-      limitNum && !isNaN(limitNum) ? limitNum : undefined,
-      offsetNum && !isNaN(offsetNum) ? offsetNum : undefined,
-    );
+  async findAll(@Query() query: ListQueryDto) {
+    const result = await this.service.findAll(query);
+    return buildSuccessResponse(result.data, undefined, result.meta);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<TItemEntity | null> {
-    return this.service.findOne(parseInt(id, 10));
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const item = await this.service.findOne(id);
+    return buildSuccessResponse(item);
   }
 
   @Post()
-  async create(@Body() data: Partial<TItemEntity>): Promise<TItemEntity> {
-    return this.service.create(data);
+  async create(@Body() data: CreateTItemDto) {
+    const item = await this.service.create(data);
+    return buildSuccessResponse(item, 'Item created successfully');
   }
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
-    @Body() data: Partial<TItemEntity>,
-  ): Promise<TItemEntity | null> {
-    return this.service.update(parseInt(id, 10), data);
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateTItemDto,
+  ) {
+    const item = await this.service.update(id, data);
+    return buildSuccessResponse(item, 'Item updated successfully');
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.service.remove(parseInt(id, 10));
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.service.remove(id);
+    return buildSuccessResponse(true, 'Item removed successfully');
   }
 }

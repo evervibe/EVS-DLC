@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { DashboardLayout } from '@/layout/DashboardLayout';
 import { DashboardPage } from '@/pages/dashboard';
-import { ItemsPage } from '@/tools/data/items';
-import { SkillsPage } from '@/tools/data/skills';
-import { SkillLevelsPage } from '@/tools/data/skilllevel';
-import { StringsPage } from '@/tools/data/strings';
+import { ItemsPage } from '@/modules/items';
+import { SkillsPage } from '@/modules/skills';
+import { SkillLevelsPage } from '@/modules/skilllevels';
+import { StringsPage } from '@/modules/strings';
 import { SettingsPage } from '@/pages/settings';
 import { HealthMonitor } from '@/pages/HealthMonitor';
 

@@ -1,44 +1,56 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../../../common/middleware';
+import { buildSuccessResponse } from '../../../common/utils';
 import { TSkilllevelService } from './t_skilllevel.service';
-import { TSkilllevelEntity } from './t_skilllevel.entity';
+import { SkillLevelQueryDto } from './dto/t_skilllevel-query.dto';
+import { CreateTSkilllevelDto, UpdateTSkilllevelDto } from './dto/t_skilllevel.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('data/t_skilllevel')
 export class TSkilllevelController {
   constructor(private readonly service: TSkilllevelService) {}
 
   @Get()
-  async findAll(
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
-  ): Promise<TSkilllevelEntity[]> {
-    const limitNum = limit ? parseInt(limit, 10) : undefined;
-    const offsetNum = offset ? parseInt(offset, 10) : undefined;
-    return this.service.findAll(
-      limitNum && !isNaN(limitNum) ? limitNum : undefined,
-      offsetNum && !isNaN(offsetNum) ? offsetNum : undefined,
-    );
+  async findAll(@Query() query: SkillLevelQueryDto) {
+    const result = await this.service.findAll(query);
+    return buildSuccessResponse(result.data, undefined, result.meta);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<TSkilllevelEntity | null> {
-    return this.service.findOne(parseInt(id, 10));
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const level = await this.service.findOne(id);
+    return buildSuccessResponse(level);
   }
 
   @Post()
-  async create(@Body() data: Partial<TSkilllevelEntity>): Promise<TSkilllevelEntity> {
-    return this.service.create(data);
+  async create(@Body() data: CreateTSkilllevelDto) {
+    const level = await this.service.create(data);
+    return buildSuccessResponse(level, 'Skill level created successfully');
   }
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
-    @Body() data: Partial<TSkilllevelEntity>,
-  ): Promise<TSkilllevelEntity | null> {
-    return this.service.update(parseInt(id, 10), data);
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateTSkilllevelDto,
+  ) {
+    const level = await this.service.update(id, data);
+    return buildSuccessResponse(level, 'Skill level updated successfully');
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
-    return this.service.remove(parseInt(id, 10));
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.service.remove(id);
+    return buildSuccessResponse(true, 'Skill level removed successfully');
   }
 }
