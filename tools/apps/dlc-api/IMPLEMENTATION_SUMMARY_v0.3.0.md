@@ -217,7 +217,7 @@ Users can adopt the new system by:
 | Metric | Value |
 |--------|-------|
 | Version | 0.3.0 |
-| Files Created | 32 |
+| Files Created/Modified | 33 |
 | TypeScript Files | 20 (entities/modules/services/controllers) |
 | Documentation Files | 3 |
 | Total Endpoints | 25 |
