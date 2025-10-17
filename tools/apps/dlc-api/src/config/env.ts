@@ -45,7 +45,7 @@ export const env: EnvConfig = {
     host: getEnvValue('DB_AUTH_HOST', 'localhost'),
     port: getEnvNumber('DB_AUTH_PORT', 3306),
     user: getEnvValue('DB_AUTH_USER', 'root'),
-    password: getEnvValue('DB_AUTH_PASSWORD', ''),
+    password: getEnvValue('DB_AUTH_PASS', ''),
     database: getEnvValue('DB_AUTH_NAME', 'db_auth'),
   },
   
@@ -53,7 +53,7 @@ export const env: EnvConfig = {
     host: getEnvValue('DB_GAME_HOST', 'localhost'),
     port: getEnvNumber('DB_GAME_PORT', 3306),
     user: getEnvValue('DB_GAME_USER', 'root'),
-    password: getEnvValue('DB_GAME_PASSWORD', ''),
+    password: getEnvValue('DB_GAME_PASS', ''),
     database: getEnvValue('DB_GAME_NAME', 'db_db'),
   },
   
@@ -61,7 +61,7 @@ export const env: EnvConfig = {
     host: getEnvValue('DB_DATA_HOST', 'localhost'),
     port: getEnvNumber('DB_DATA_PORT', 3306),
     user: getEnvValue('DB_DATA_USER', 'root'),
-    password: getEnvValue('DB_DATA_PASSWORD', ''),
+    password: getEnvValue('DB_DATA_PASS', ''),
     database: getEnvValue('DB_DATA_NAME', 'db_data'),
   },
   
@@ -69,7 +69,7 @@ export const env: EnvConfig = {
     host: getEnvValue('DB_POST_HOST', 'localhost'),
     port: getEnvNumber('DB_POST_PORT', 3306),
     user: getEnvValue('DB_POST_USER', 'root'),
-    password: getEnvValue('DB_POST_PASSWORD', ''),
+    password: getEnvValue('DB_POST_PASS', ''),
     database: getEnvValue('DB_POST_NAME', 'db_post'),
   },
 };

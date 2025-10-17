@@ -1,9 +1,13 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { TSkilllevelEntity } from '../t_skilllevel/t_skilllevel.entity';
 
 @Entity('t_skill')
 export class TSkillEntity {
   @PrimaryColumn({ type: 'int' })
   a_index: number;
+
+  @OneToMany(() => TSkilllevelEntity, (level) => level.skill)
+  levels: TSkilllevelEntity[];
 
   @Column({ type: 'int', default: 999 })
   a_job: number;
