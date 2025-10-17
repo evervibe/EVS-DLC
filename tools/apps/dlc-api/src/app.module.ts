@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 import * as Joi from 'joi';
 import { AuthModule } from './modules/auth/auth.module';
 import { GameModule } from './modules/game/game.module';
@@ -8,8 +8,7 @@ import { DataModule } from './modules/data/data.module';
 import { PostModule } from './modules/post/post.module';
 import { HealthModule } from './modules/health/health.module';
 import { OpsModule } from './modules/ops/ops.module';
-import { GlobalExceptionFilter } from './common/errors';
-import { validationPipe } from './common/middleware';
+import { GlobalExceptionFilter, NotFoundExceptionFilter } from './common/errors';
 import { RedisModule } from './core/redis/redis.module';
 import { CacheModule } from './core/cache/cache.module';
 
@@ -74,11 +73,11 @@ import { CacheModule } from './core/cache/cache.module';
   providers: [
     {
       provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
+      useClass: NotFoundExceptionFilter,
     },
     {
-      provide: APP_PIPE,
-      useValue: validationPipe,
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
   ],
 })

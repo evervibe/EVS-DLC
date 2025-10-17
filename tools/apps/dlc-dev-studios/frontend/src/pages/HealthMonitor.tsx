@@ -4,6 +4,7 @@ import { ENV } from '@/core/config/env';
 import { Activity, Database, Server, CheckCircle, XCircle } from 'lucide-react';
 import { Card } from '@/tools/ui/components/Card';
 import { Loader } from '@/tools/ui/components/Loader';
+import { ApiOfflineNotice } from '@/modules/shared/ApiOfflineNotice';
 
 export function HealthMonitor() {
   const { data: healthStatus, isLoading, error, refetch } = useQuery({
@@ -67,14 +68,7 @@ export function HealthMonitor() {
         </Card>
       )}
 
-      {error && (
-        <Card>
-          <div className="flex items-center gap-2 text-red-600">
-            <XCircle className="h-5 w-5" />
-            <span>Failed to fetch health status</span>
-          </div>
-        </Card>
-      )}
+      {error && <ApiOfflineNotice onRetry={() => refetch()} />}
 
       {healthStatus && (
         <>
