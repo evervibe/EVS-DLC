@@ -6,7 +6,7 @@ import { env } from './config/env';
 import { testDbConnections } from './common/db';
 
 async function bootstrap() {
-  console.log('🚀 Starting DLC API v0.5.0...');
+  console.log('🚀 Starting DLC API v0.6.0...');
   
   // Test database connections
   try {
@@ -37,9 +37,14 @@ async function bootstrap() {
   await app.listen(env.apiPort, '0.0.0.0');
   
   console.log('');
-  console.log('✅ DLC API läuft auf Port', env.apiPort);
+  console.log('✅ DLC API v0.6.0 ready on port', env.apiPort);
   console.log('✅ Environment:', env.nodeEnv);
   console.log('✅ Fastify adapter enabled');
+  console.log('✅ Cache enabled:', env.cache.useCache);
+  if (env.cache.useCache) {
+    console.log('   Redis URL:', env.cache.redisUrl);
+    console.log('   Cache TTL:', env.cache.cacheTTL + 's');
+  }
   console.log('');
   console.log('📍 Health Check: http://localhost:' + env.apiPort + '/health');
   console.log('');
