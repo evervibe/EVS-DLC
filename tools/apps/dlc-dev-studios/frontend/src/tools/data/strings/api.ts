@@ -1,4 +1,4 @@
-import { api } from '@/api/client';
+import { apiClient as api } from '@/core/api/apiClient';
 import { TString, CreateTStringDto, UpdateTStringDto } from './types';
 
 export const getStrings = () => api.get<TString[]>('/data/t_string');

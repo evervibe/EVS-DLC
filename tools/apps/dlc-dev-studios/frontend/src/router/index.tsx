@@ -6,6 +6,7 @@ import { SkillsPage } from '@/tools/data/skills';
 import { SkillLevelsPage } from '@/tools/data/skilllevel';
 import { StringsPage } from '@/tools/data/strings';
 import { SettingsPage } from '@/pages/settings';
+import { HealthMonitor } from '@/pages/HealthMonitor';
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardPage />,
+      },
+      {
+        path: 'health',
+        element: <HealthMonitor />,
       },
       {
         path: 'items',

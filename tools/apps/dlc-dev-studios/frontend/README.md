@@ -4,7 +4,7 @@ A production-ready React/Vite frontend application for managing DLC API data.
 
 ## Version
 
-**0.0.1-alpha** - Initial Frontend Release
+**0.3.0+env** - Environment Configuration Release
 
 ## Features
 
@@ -16,6 +16,9 @@ A production-ready React/Vite frontend application for managing DLC API data.
 - 📱 **Responsive**: Works on desktop and mobile devices
 - 🎯 **Type-Safe**: Complete TypeScript coverage
 - 🧩 **Modular**: Clean architecture mirroring backend structure
+- ⚙️ **NEW: Comprehensive .env Configuration System**
+- 🏥 **NEW: Real-time Health Monitoring**
+- 🛠️ **NEW: Developer Tools Infrastructure**
 
 ## Tech Stack
 
@@ -54,12 +57,24 @@ pnpm install
 cp .env.example .env
 ```
 
-4. Edit `.env` file with your API URL:
+4. Edit `.env` file with your configuration:
 ```env
-VITE_API_URL=http://localhost:4000
+VITE_APP_ENV=development
 VITE_APP_NAME=DLC Web Admin
-VITE_APP_VERSION=0.0.1-alpha
+VITE_APP_VERSION=0.3.0+env
+
+VITE_API_URL=http://localhost:4000/api
+VITE_API_HEALTH_URL=http://localhost:4000/health
+VITE_REDIS_HEALTH_URL=http://localhost:4000/ops/redis
+VITE_DB_HEALTH_URL=http://localhost:4000/ops/db
+VITE_API_TIMEOUT=8000
+VITE_DATA_CACHE=true
+
+VITE_ENABLE_DEBUG_PANEL=true
+VITE_LOG_LEVEL=debug
 ```
+
+**📚 For detailed environment setup instructions, see [docs/FRONTEND_ENV_SETUP.md](docs/FRONTEND_ENV_SETUP.md)**
 
 ## Development
 
@@ -89,17 +104,40 @@ frontend/
 ├── src/
 │   ├── main.tsx              # Entry point
 │   ├── App.tsx               # Root component
-│   ├── router/               # Route definitions
-│   ├── layout/               # Layout components
-│   ├── pages/                # Page components
-│   ├── tools/                # Modular features
-│   │   ├── data/            # Data management (items, skills, etc.)
-│   │   ├── auth/            # Authentication (placeholder)
-│   │   └── ui/              # Shared UI components
-│   ├── api/                  # API client
-│   ├── lib/                  # Utility functions
-│   └── styles/               # Global styles
-├── docs/                     # Documentation
+│   ├── core/                 # Core infrastructure (NEW)
+│   │   ├── config/          # Environment configuration
+│   │   ├── api/             # API client and utilities
+│   │   ├── store/           # State management (prepared)
+│   │   └── utils/           # Utility functions (prepared)
+│   ├── router/              # Route definitions
+│   ├── layout/              # Layout components
+│   ├── pages/               # Page components
+│   ├── components/          # Organized components (NEW)
+│   │   ├── ui/             # UI components
+│   │   ├── layout/         # Layout components
+│   │   └── feedback/       # Feedback components
+│   ├── modules/             # Feature modules (NEW)
+│   │   ├── items/          # Items module
+│   │   ├── skills/         # Skills module
+│   │   ├── strings/        # Strings module
+│   │   └── game/           # Game module
+│   ├── tools/               # Modular features
+│   │   ├── data/           # Data management (items, skills, etc.)
+│   │   ├── search/         # Global search (placeholder)
+│   │   ├── compare/        # Data comparison (placeholder)
+│   │   ├── export/         # Data export (placeholder)
+│   │   ├── import/         # Data import (placeholder)
+│   │   ├── auth/           # Authentication (placeholder)
+│   │   └── ui/             # Shared UI components
+│   ├── hooks/               # Custom React hooks
+│   ├── lib/                 # Utility functions
+│   └── styles/              # Global styles
+├── docs/                    # Documentation
+│   ├── FRONTEND_ENV_SETUP.md       # Environment setup guide (NEW)
+│   ├── ROADMAP_v0.4.0.md          # v0.4.0 roadmap (NEW)
+│   ├── CHANGELOG.md                # Version history
+│   ├── FRONTEND_STRUCTURE_OVERVIEW.md
+│   └── API_BINDINGS.md
 ├── package.json
 ├── vite.config.ts
 ├── tailwind.config.ts
@@ -109,6 +147,7 @@ frontend/
 ## Available Routes
 
 - `/` - Dashboard with API health status
+- `/health` - **NEW: Real-time Health Monitor**
 - `/items` - Items management (t_item)
 - `/skills` - Skills management (t_skill)
 - `/skilllevels` - Skill levels management (t_skilllevel)
@@ -121,6 +160,17 @@ frontend/
 - API health status check
 - Quick stats overview
 - Navigation to all modules
+- Environment information display
+
+### Health Monitor (NEW in v0.3.0+env)
+- Real-time monitoring of:
+  - API Server status
+  - Redis Cache status
+  - Database status
+- Auto-refresh every 5 seconds
+- Visual status indicators
+- System information panel
+- Environment configuration display
 
 ### Data Management
 Each data module (Items, Skills, Skill Levels, Strings) provides:
@@ -139,13 +189,54 @@ Reusable UI components available in `src/tools/ui/components/`:
 - `ErrorBox` - Error display
 - `NavBar` - Navigation bar
 
+### Developer Tools (Infrastructure Ready)
+Placeholder tools prepared for v0.4.0:
+- **Search** - Global dataset search with keyboard shortcuts
+- **Compare** - Visual dataset comparison
+- **Export** - Export data as JSON/CSV
+- **Import** - Import JSON data (dev mode only)
+
 ## API Integration
 
 The frontend connects to the DLC API backend via Axios.
 
-**Base URL:** Configured in `.env` as `VITE_API_URL`
+**Configuration:**
+- Base URL: Configured via `VITE_API_URL` in `.env`
+- Timeout: Configured via `VITE_API_TIMEOUT` in `.env`
+- All API calls use the centralized client at `src/core/api/apiClient.ts`
 
 See `docs/API_BINDINGS.md` for complete API documentation.
+
+## Environment Configuration
+
+v0.3.0+env introduces comprehensive environment configuration:
+
+**Core Configuration:**
+- `ENV.APP_ENV` - Application environment
+- `ENV.APP_NAME` - Application name
+- `ENV.APP_VERSION` - Application version
+
+**API Configuration:**
+- `ENV.API_URL` - Base API URL
+- `ENV.API_TIMEOUT` - Request timeout
+- `ENV.API_HEALTH_URL` - Health check endpoint
+- `ENV.REDIS_HEALTH_URL` - Redis health endpoint
+- `ENV.DB_HEALTH_URL` - Database health endpoint
+
+**Feature Flags:**
+- `ENV.DATA_CACHE` - Enable data caching
+- `ENV.ENABLE_DEBUG_PANEL` - Enable debug panel
+- `ENV.LOG_LEVEL` - Logging level
+
+**Usage in code:**
+```typescript
+import { ENV } from '@/core/config/env';
+
+console.log(ENV.API_URL);      // Access configuration
+console.log(ENV.APP_VERSION);  // Type-safe access
+```
+
+📚 **Complete guide:** [docs/FRONTEND_ENV_SETUP.md](docs/FRONTEND_ENV_SETUP.md)
 
 ## Styling
 
@@ -157,9 +248,11 @@ Modify theme in `tailwind.config.ts`.
 
 ## Documentation
 
-- `docs/FRONTEND_STRUCTURE_OVERVIEW.md` - Architecture and module organization
-- `docs/API_BINDINGS.md` - API endpoint documentation
-- `docs/CHANGELOG.md` - Version history
+- **[docs/FRONTEND_ENV_SETUP.md](docs/FRONTEND_ENV_SETUP.md)** - Environment configuration guide (NEW)
+- **[docs/ROADMAP_v0.4.0.md](docs/ROADMAP_v0.4.0.md)** - v0.4.0 roadmap (Auth & RBAC) (NEW)
+- **[docs/CHANGELOG.md](docs/CHANGELOG.md)** - Version history
+- **[docs/FRONTEND_STRUCTURE_OVERVIEW.md](docs/FRONTEND_STRUCTURE_OVERVIEW.md)** - Architecture and module organization
+- **[docs/API_BINDINGS.md](docs/API_BINDINGS.md)** - API endpoint documentation
 
 ## Deployment Options
 
@@ -203,11 +296,48 @@ pnpm lint
 
 ## Environment Variables
 
+See [docs/FRONTEND_ENV_SETUP.md](docs/FRONTEND_ENV_SETUP.md) for complete documentation.
+
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `http://localhost:4000` |
+| `VITE_APP_ENV` | Application environment | - |
 | `VITE_APP_NAME` | Application name | `DLC Web Admin` |
-| `VITE_APP_VERSION` | Application version | `0.0.1-alpha` |
+| `VITE_APP_VERSION` | Application version | `0.3.0+env` |
+| `VITE_API_URL` | Backend API URL | - |
+| `VITE_API_TIMEOUT` | API timeout (ms) | `8000` |
+| `VITE_API_HEALTH_URL` | API health endpoint | - |
+| `VITE_REDIS_HEALTH_URL` | Redis health endpoint | - |
+| `VITE_DB_HEALTH_URL` | Database health endpoint | - |
+| `VITE_DATA_CACHE` | Enable caching | `false` |
+| `VITE_ENABLE_DEBUG_PANEL` | Enable debug panel | `false` |
+| `VITE_LOG_LEVEL` | Logging level | `info` |
+
+## What's New in v0.3.0+env
+
+✨ **Major Updates:**
+- Comprehensive environment configuration system
+- Real-time health monitoring for API, Redis, and Database
+- Reorganized architecture with `/core` infrastructure
+- Developer tools infrastructure (search, compare, export, import)
+- Enhanced documentation and roadmap
+
+🔧 **Infrastructure:**
+- Centralized ENV configuration
+- Type-safe environment access
+- Configurable API client with timeout
+- Health check system with auto-refresh
+
+📝 **Documentation:**
+- Complete environment setup guide
+- v0.4.0 roadmap (Auth & RBAC)
+- Updated changelog and structure overview
+
+## Roadmap
+
+**Current:** v0.3.0+env - Environment Configuration & Health Monitoring
+**Next:** v0.4.0 - Authentication & RBAC
+
+See [docs/ROADMAP_v0.4.0.md](docs/ROADMAP_v0.4.0.md) for detailed plans.
 
 ## Contributing
 

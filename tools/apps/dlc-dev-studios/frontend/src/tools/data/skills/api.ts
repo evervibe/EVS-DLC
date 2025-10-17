@@ -1,4 +1,4 @@
-import { api } from '@/api/client';
+import { apiClient as api } from '@/core/api/apiClient';
 import { TSkill, CreateTSkillDto, UpdateTSkillDto } from './types';
 
 export const getSkills = () => api.get<TSkill[]>('/data/t_skill');

@@ -1,4 +1,4 @@
-import { api } from '@/api/client';
+import { apiClient as api } from '@/core/api/apiClient';
 import { TSkillLevel, CreateTSkillLevelDto, UpdateTSkillLevelDto } from './types';
 
 export const getSkillLevels = () => api.get<TSkillLevel[]>('/data/t_skilllevel');

@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/tools/ui/components/Card';
 import { Loader } from '@/tools/ui/components/Loader';
 import { ErrorBox } from '@/tools/ui/components/ErrorBox';
-import { api } from '@/api/client';
+import { apiClient } from '@/core/api/apiClient';
+import { ENV } from '@/core/config/env';
 import { Database, Zap, Users, Languages } from 'lucide-react';
 
 export function DashboardPage() {
@@ -10,7 +11,7 @@ export function DashboardPage() {
     queryKey: ['health'],
     queryFn: async () => {
       try {
-        const response = await api.get('/healthz');
+        const response = await apiClient.get('/health');
         return response.data;
       } catch (err) {
         throw new Error('Failed to fetch health status');
@@ -42,7 +43,8 @@ export function DashboardPage() {
               <span className="font-medium">API is healthy</span>
             </div>
             <div className="text-sm text-gray-600">
-              <p>Connected to: {import.meta.env.VITE_API_URL || 'http://localhost:4000'}</p>
+              <p>Connected to: {ENV.API_URL}</p>
+              <p>Version: {ENV.APP_VERSION}</p>
             </div>
           </div>
         )}
