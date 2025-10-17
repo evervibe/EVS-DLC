@@ -198,12 +198,26 @@ If you have access to the `db_data` MySQL database, you can introspect the schem
 npm run introspect
 ```
 
-This will:
+**Requirements:**
+- MySQL database accessible at the configured host
+- Environment variables configured in `.env` (see `.env.example`):
+  - `DB_DATA_HOST` - Database host (default: localhost)
+  - `DB_DATA_PORT` - Database port (default: 3306)
+  - `DB_DATA_USER` - Database user (default: root)
+  - `DB_DATA_PASSWORD` - Database password
+  - `DB_DATA_NAME` - Database name (default: db_data)
+
+**What it does:**
 - Connect to the MySQL database using credentials from `.env`
 - Read all tables and columns from `INFORMATION_SCHEMA`
 - Generate TypeORM entities with proper decorators
 - Create modules, services, and controllers for each table
 - Generate migration snapshot and documentation
+
+**Error Handling:**
+- If database connection fails, the script will exit with an error message
+- Ensure your database is running and credentials are correct
+- Check firewall settings if connecting to a remote database
 
 #### Using Mock Data
 For development without database access:
@@ -212,7 +226,10 @@ For development without database access:
 npm run generate:mock
 ```
 
-This generates sample entities for common game tables (t_item, t_string, t_skill, etc.) without requiring database connection.
+This generates sample entities for common game tables (t_item, t_string, t_skill, etc.) without requiring database connection. Perfect for:
+- Initial development
+- CI/CD environments without database access
+- Testing the API structure
 
 ### Adding New Modules
 
