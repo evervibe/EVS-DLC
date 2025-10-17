@@ -9,6 +9,8 @@ import { PostModule } from './modules/post/post.module';
 import { HealthModule } from './modules/health/health.module';
 import { GlobalExceptionFilter } from './common/errors';
 import { validationPipe } from './common/middleware';
+import { RedisModule } from './core/redis/redis.module';
+import { CacheModule } from './core/cache/cache.module';
 
 @Module({
   imports: [
@@ -46,8 +48,18 @@ import { validationPipe } from './common/middleware';
         DB_POST_USER: Joi.string().default('root'),
         DB_POST_PASS: Joi.string().allow('').default('root'),
         DB_POST_NAME: Joi.string().default('db_post'),
+        
+        // Cache/Redis Configuration
+        USE_CACHE: Joi.boolean().default(false),
+        REDIS_URL: Joi.string().uri().default('redis://localhost:6379'),
+        CACHE_TTL: Joi.number().default(120),
+        CACHE_PREFIX: Joi.string().default('dlc'),
+        PRELOAD_ON_START: Joi.boolean().default(false),
+        PRELOAD_TABLES: Joi.string().allow('').default(''),
       }),
     }),
+    RedisModule,
+    CacheModule,
     AuthModule,
     GameModule,
     DataModule,

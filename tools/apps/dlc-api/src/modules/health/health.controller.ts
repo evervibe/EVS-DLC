@@ -1,8 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { dbPools } from '../../common/db';
+import { RedisService } from '../../core/redis/redis.service';
 
 @Controller('health')
 export class HealthController {
+  constructor(private readonly redisService: RedisService) {}
+
   @Get()
   async getStatus() {
     const dbStatus = {
@@ -25,12 +28,19 @@ export class HealthController {
     }
 
     const allDbsHealthy = Object.values(dbStatus).every(status => status);
+    
+    // Get cache status
+    const cacheStatus = {
+      connected: this.redisService.isConnected(),
+      keys: await this.redisService.count(),
+    };
 
     return {
       status: allDbsHealthy ? 'ok' : 'degraded',
       timestamp: new Date().toISOString(),
-      version: process.env.npm_package_version || '0.5.0',
+      version: '0.6.0',
       databases: dbStatus,
+      cache: cacheStatus,
     };
   }
 
