@@ -21,4 +21,9 @@ export default defineConfig({
       '/game': 'http://localhost:30089',
     },
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+  },
 })

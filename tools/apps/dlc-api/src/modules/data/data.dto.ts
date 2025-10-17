@@ -1,4 +1,5 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsOptional, IsInt, Min, Max } from 'class-validator';
 
 export class GetItemsDto {
   @IsOptional()
@@ -6,7 +7,10 @@ export class GetItemsDto {
   type?: string;
 
   @IsOptional()
-  @IsNumber()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(200)
   limit?: number;
 }
 

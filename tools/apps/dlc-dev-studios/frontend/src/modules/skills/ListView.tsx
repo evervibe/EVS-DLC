@@ -6,6 +6,7 @@ import { TableView } from '@/tools/ui/components/TableView';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/components/feedback/ToastContext';
 import { HealthStatusBadge } from '../shared/HealthStatusBadge';
+import { ApiOfflineNotice } from '../shared/ApiOfflineNotice';
 import { useCreateSkill, useDeleteSkill, useSkillList, useUpdateSkill } from './hooks';
 import { CreateTSkillDto, SkillListParams, TSkill, UpdateTSkillDto } from './types';
 import { EditModal } from './EditModal';
@@ -30,6 +31,7 @@ export function SkillsListView() {
   );
 
   const listQuery = useSkillList(params);
+  const isApiUnavailable = listQuery.isError;
   const createMutation = useCreateSkill();
   const updateMutation = useUpdateSkill();
   const deleteMutation = useDeleteSkill();
@@ -225,72 +227,78 @@ export function SkillsListView() {
         </div>
         <div className="flex items-center gap-3">
           <HealthStatusBadge />
-          <Button onClick={() => setIsCreateOpen(true)}>
+          <Button onClick={() => setIsCreateOpen(true)} disabled={isApiUnavailable}>
             <Plus className="mr-2 h-4 w-4" /> Create Skill
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-3"
-            placeholder="Search skills..."
+      {isApiUnavailable ? (
+        <ApiOfflineNotice onRetry={() => listQuery.refetch()} />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-3"
+                placeholder="Search skills..."
+              />
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-600">
+              <span>Page size:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="rounded border border-gray-300 px-2 py-1"
+              >
+                {PAGE_SIZE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <TableView<SkillRow>
+            columns={columns}
+            data={rows}
+            isLoading={listQuery.isLoading}
+            error={listQuery.error instanceof Error ? listQuery.error.message : null}
+            emptyMessage={search ? 'No skills match your search.' : 'No skills found.'}
           />
-        </div>
-        <div className="flex items-center gap-3 text-sm text-gray-600">
-          <span>Page size:</span>
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPage(1);
-            }}
-            className="rounded border border-gray-300 px-2 py-1"
-          >
-            {PAGE_SIZE_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
 
-      <TableView<SkillRow>
-        columns={columns}
-        data={rows}
-        isLoading={listQuery.isLoading}
-        error={listQuery.error instanceof Error ? listQuery.error.message : null}
-        emptyMessage={search ? 'No skills match your search.' : 'No skills found.'}
-      />
-
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-gray-600">
-          Showing {rangeStart} - {rangeEnd} of {total} skills
-        </p>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" disabled={page === 1} onClick={() => setPage((prev) => Math.max(1, prev - 1))}>
-            Previous
-          </Button>
-          <span className="text-sm text-gray-600">
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            variant="ghost"
-            disabled={page === totalPages}
-            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="text-sm text-gray-600">
+              Showing {rangeStart} - {rangeEnd} of {total} skills
+            </p>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" disabled={page === 1} onClick={() => setPage((prev) => Math.max(1, prev - 1))}>
+                Previous
+              </Button>
+              <span className="text-sm text-gray-600">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                variant="ghost"
+                disabled={page === totalPages}
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
 
       <EditModal
         isOpen={isCreateOpen}

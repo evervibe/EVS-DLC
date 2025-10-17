@@ -6,9 +6,10 @@ import rateLimit from '@fastify/rate-limit';
 import { AppModule } from './app.module';
 import { env } from './config/env';
 import { testDbConnections } from './common/db';
+import { validationPipe } from './common/middleware';
 
 async function bootstrap() {
-  console.log('🚀 Starting DLC API v0.7.1...');
+  console.log('🚀 Starting DLC API v0.8.1...');
 
   // Test database connections
   try {
@@ -38,17 +39,36 @@ async function bootstrap() {
     timeWindow: '1 minute',
   });
 
+  app.useGlobalPipes(validationPipe);
+
   // Enable CORS
   app.enableCors({
-    origin: true,
+    origin: 'http://localhost:5173',
     credentials: true,
+  });
+
+  const fastifyInstance = app.getHttpAdapter().getInstance();
+
+  fastifyInstance.get('/', async (_request, reply) => {
+    reply.send({ message: 'DLC API Root - v0.8.1', status: 'running' });
+  });
+
+  app.setNotFoundHandler((request, reply) => {
+    reply.status(404).send({
+      success: false,
+      statusCode: 404,
+      message: 'Route not found',
+      errorCode: 'NOT_FOUND',
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    });
   });
 
   // Start listening
   await app.listen(env.apiPort, '0.0.0.0');
 
   console.log('');
-  console.log('✅ DLC API v0.7.1 ready on port', env.apiPort);
+  console.log('✅ DLC API v0.8.1 ready on port', env.apiPort);
   console.log('✅ Environment:', env.nodeEnv);
   console.log('✅ Fastify adapter enabled');
   console.log('✅ CORS enabled');
