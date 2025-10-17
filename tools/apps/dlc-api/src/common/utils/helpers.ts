@@ -52,3 +52,60 @@ export const deepClone = <T>(obj: T): T => {
   // Fallback to JSON method (has limitations)
   return JSON.parse(JSON.stringify(obj));
 };
+
+/**
+ * Sanitize a primitive value to mitigate XSS-style payloads.
+ * Currently strips script tags and angle brackets from strings.
+ */
+export const sanitizeValue = <T>(value: T): T => {
+  if (typeof value === 'string') {
+    return value
+      .replace(/<\s*script.*?>.*?<\s*\/\s*script>/gis, '')
+      .replace(/[<>]/g, '') as T;
+  }
+
+  return value;
+};
+
+/**
+ * Recursively sanitize object string values.
+ */
+export const sanitizeObject = <T extends Record<string, any>>(payload: T): T => {
+  if (!payload || typeof payload !== 'object') {
+    return payload;
+  }
+
+  const clone: Record<string, any> = Array.isArray(payload) ? [...payload] : { ...payload };
+
+  for (const key of Object.keys(clone)) {
+    const value = clone[key];
+    if (value && typeof value === 'object') {
+      clone[key] = sanitizeObject(value);
+      continue;
+    }
+
+    clone[key] = sanitizeValue(value);
+  }
+
+  return clone as T;
+};
+
+export interface SuccessResponse<TData, TMeta = Record<string, unknown> | undefined> {
+  success: true;
+  data: TData;
+  message?: string;
+  meta?: TMeta;
+  timestamp: string;
+}
+
+export const buildSuccessResponse = <TData, TMeta = Record<string, unknown> | undefined>(
+  data: TData,
+  message?: string,
+  meta?: TMeta,
+): SuccessResponse<TData, TMeta> => ({
+  success: true,
+  data,
+  message,
+  meta,
+  timestamp: new Date().toISOString(),
+});

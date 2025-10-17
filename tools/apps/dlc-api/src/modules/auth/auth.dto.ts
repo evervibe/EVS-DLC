@@ -12,8 +12,10 @@ export class LoginDto {
 
 export class LoginResponseDto {
   token: string;
+  expiresAt: string;
   user: {
     id: string;
     username: string;
+    roles: string[];
   };
 }

@@ -1,6 +1,8 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
+import { verify, JwtPayload } from 'jsonwebtoken';
 import { ApiError } from '../errors';
+import { env } from '../../config/env';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -23,13 +25,15 @@ export class JwtAuthGuard implements CanActivate {
       throw ApiError.unauthorized('No token provided');
     }
 
-    // TODO: Implement actual JWT validation logic here
-    // For now, this is a placeholder that accepts any token
-    // In production, you would verify the JWT signature and decode the payload
-    
-    // Add user info to request (placeholder)
-    (request as any).user = { id: 'placeholder-user-id' };
-
-    return true;
+    try {
+      const payload = verify(token, env.jwtSecret) as JwtPayload | string;
+      (request as any).user =
+        typeof payload === 'string'
+          ? { sub: payload }
+          : payload;
+      return true;
+    } catch (error) {
+      throw ApiError.unauthorized('Invalid or expired token', 'AUTH_INVALID_TOKEN');
+    }
   }
 }
