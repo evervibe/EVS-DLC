@@ -187,6 +187,33 @@ Authorization: Bearer <your-token>
 
 ## Development
 
+### Database Introspection
+
+This project supports automatic entity generation from the database schema:
+
+#### Using Real Database
+If you have access to the `db_data` MySQL database, you can introspect the schema and generate entities:
+
+```bash
+npm run introspect
+```
+
+This will:
+- Connect to the MySQL database using credentials from `.env`
+- Read all tables and columns from `INFORMATION_SCHEMA`
+- Generate TypeORM entities with proper decorators
+- Create modules, services, and controllers for each table
+- Generate migration snapshot and documentation
+
+#### Using Mock Data
+For development without database access:
+
+```bash
+npm run generate:mock
+```
+
+This generates sample entities for common game tables (t_item, t_string, t_skill, etc.) without requiring database connection.
+
 ### Adding New Modules
 
 1. Create module directory under `src/modules/`
