@@ -1,4 +1,4 @@
-import { api } from '@/api/client';
+import { apiClient as api } from '@/core/api/apiClient';
 import { TItem, CreateTItemDto, UpdateTItemDto } from './types';
 
 export const getItems = () => api.get<TItem[]>('/data/t_item');
