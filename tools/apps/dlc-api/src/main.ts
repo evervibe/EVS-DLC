@@ -6,15 +6,17 @@ import { env } from './config/env';
 import { testDbConnections } from './common/db';
 
 async function bootstrap() {
-  console.log('🚀 Starting DLC API...');
+  console.log('🚀 Starting DLC API v0.5.0...');
   
   // Test database connections
   try {
-    console.log('Testing database connections...');
+    console.log('📊 Testing database connections...');
     await testDbConnections();
+    console.log('✅ All database connections successful');
   } catch (error) {
-    console.error('Database connection test failed:', error.message);
-    console.error('API will start but database operations may fail.');
+    console.warn('⚠️  Database connection test failed:', error.message);
+    console.warn('⚠️  API will start but database operations may fail.');
+    console.warn('💡 Make sure Docker containers are running: cd infra/DB/game && docker compose up -d');
   }
 
   // Create NestJS application with Fastify adapter
@@ -34,9 +36,13 @@ async function bootstrap() {
   // Start listening
   await app.listen(env.apiPort, '0.0.0.0');
   
-  console.log(`✓ API running on port ${env.apiPort}`);
-  console.log(`✓ Environment: ${env.nodeEnv}`);
-  console.log(`✓ Fastify adapter enabled`);
+  console.log('');
+  console.log('✅ DLC API läuft auf Port', env.apiPort);
+  console.log('✅ Environment:', env.nodeEnv);
+  console.log('✅ Fastify adapter enabled');
+  console.log('');
+  console.log('📍 Health Check: http://localhost:' + env.apiPort + '/health');
+  console.log('');
 }
 
 bootstrap().catch((error) => {
