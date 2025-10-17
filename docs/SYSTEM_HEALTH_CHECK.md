@@ -14,7 +14,7 @@ This document provides a comprehensive overview of all services in the EVS-DLC s
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                       Frontend (Vite + React)                │
-│                     Port: 5173 (Development)                 │
+│                     Port: 5174 (Development)                 │
 │                                                              │
 │  Health Monitor Dashboard                                   │
 │  - Checks API Health                                        │
@@ -98,7 +98,7 @@ This document provides a comprehensive overview of all services in the EVS-DLC s
 
 ### 3. Frontend Health Monitoring
 
-**Location:** `http://localhost:5173/health-monitor`
+**Location:** `http://localhost:5174/health-monitor`
 
 **Purpose:** Visual dashboard for real-time system health monitoring
 
@@ -257,7 +257,7 @@ curl http://localhost:30089/health | jq
 ```
 
 **3. Test from Frontend:**
-- Navigate to: `http://localhost:5173/health-monitor`
+- Navigate to: `http://localhost:5174/health-monitor`
 - Observe status indicators
 - Click "Refresh" to force update
 
@@ -282,7 +282,7 @@ pnpm test tests/connectivity.e2e-spec.ts
 ### Development
 
 1. **Keep Health Monitor Open:**
-   - Open `http://localhost:5173/health-monitor` in a browser tab
+   - Open `http://localhost:5174/health-monitor` in a browser tab
    - Monitor during development for connectivity issues
 
 2. **Check Logs Regularly:**
@@ -322,7 +322,7 @@ pnpm test tests/connectivity.e2e-spec.ts
 
 | Service | Port | Health Check | Purpose |
 |---------|------|--------------|---------|
-| Frontend | 5173 | N/A | Web UI |
+| Frontend | 5174 | N/A | Web UI |
 | API | 30089 | /health | Backend API |
 | MySQL | 3306 | Docker healthcheck | Databases |
 | Redis | 6379 | N/A (optional) | Cache |
@@ -334,7 +334,7 @@ pnpm test tests/connectivity.e2e-spec.ts
 |-------|-----|-------------------|
 | API Basic | http://localhost:30089/health | `{"status": "ok"}` |
 | API Ready | http://localhost:30089/health/ready | `{"status": "ready"}` |
-| Frontend Monitor | http://localhost:5173/health-monitor | Dashboard UI |
+| Frontend Monitor | http://localhost:5174/health-monitor | Dashboard UI |
 
 ### Common Commands
 
@@ -362,7 +362,7 @@ docker compose down
 
 - [ ] Are Docker databases running? (`docker compose ps`)
 - [ ] Is API running on port 30089? (`lsof -i :30089`)
-- [ ] Is Frontend running on port 5173? (`lsof -i :5173`)
+- [ ] Is Frontend running on port 5174? (`lsof -i :5174`)
 - [ ] Can you curl the health endpoint? (`curl localhost:30089/health`)
 - [ ] Are .env files configured correctly?
 - [ ] Is CORS enabled in API?

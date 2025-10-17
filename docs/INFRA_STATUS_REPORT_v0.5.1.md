@@ -25,7 +25,7 @@ This report provides a comprehensive overview of the EVS-DLC repository infrastr
 │   (Frontend)     │  HTTP   │    (Backend)     │
 │   React 19       │         │   NestJS         │
 │   Vite           │         │   Fastify        │
-│   Port: 5173     │         │   Port: 30089    │
+│   Port: 5174     │         │   Port: 30089    │
 └──────────────────┘         └─────────┬────────┘
                                        │
                     ┌──────────────────┴──────────────────┐
@@ -59,7 +59,7 @@ This report provides a comprehensive overview of the EVS-DLC repository infrastr
 
 **Configuration:**
 ```bash
-Port: 5173
+Port: 5174
 Environment: development
 Version: 0.5.1
 API Base URL: http://localhost:30089/api
@@ -294,7 +294,7 @@ MYSQL_APP_PASSWORD=change-me
 
 | Service | Port | Protocol | Access |
 |---------|------|----------|--------|
-| Frontend Dev Server | 5173 | HTTP | localhost |
+| Frontend Dev Server | 5174 | HTTP | localhost |
 | Backend API | 30089 | HTTP | 0.0.0.0 |
 | MySQL Database | 3306 | TCP | localhost |
 | Adminer | 8080 | HTTP | localhost |
@@ -365,7 +365,7 @@ curl http://localhost:30089/health/ready
 ```
 
 **3. Frontend Health Monitor:**
-- **URL:** http://localhost:5173/health-monitor
+- **URL:** http://localhost:5174/health-monitor
 - **Features:** Real-time dashboard with auto-refresh
 - **Status:** ✅ All services showing online
 
@@ -381,7 +381,7 @@ curl http://localhost:30089/health/ready
 | Database Data | ✅ Connected | < 50ms | Connection pool healthy |
 | Database Post | ✅ Connected | < 50ms | Connection pool healthy |
 | Redis Cache | ⚙️ Disabled | N/A | Prepared for v0.6.0 |
-| Frontend | ✅ Online | < 5ms | Port 5173 responding |
+| Frontend | ✅ Online | < 5ms | Port 5174 responding |
 
 ---
 
@@ -760,7 +760,7 @@ pnpm install
 pnpm dev
 
 # 4. Open browser
-open http://localhost:5173
+open http://localhost:5174
 ```
 
 ### Health Check Commands
@@ -775,7 +775,7 @@ docker compose logs mysql
 
 # Check all services
 curl http://localhost:30089/health && \
-curl http://localhost:5173 && \
+curl http://localhost:5174 && \
 docker compose exec mysql mysqladmin ping -proot
 ```
 

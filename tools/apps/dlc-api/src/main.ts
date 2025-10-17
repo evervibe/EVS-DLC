@@ -8,7 +8,7 @@ import { testDbConnections } from './common/db';
 import { validationPipe, RateLimitMiddleware } from './common/middleware';
 
 async function bootstrap() {
-  console.log('🚀 Starting DLC API v0.8.4...');
+  console.log('🚀 Starting DLC API v0.8.5...');
 
   // Test database connections
   try {
@@ -30,7 +30,9 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5174'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
@@ -44,14 +46,14 @@ async function bootstrap() {
   const fastifyInstance = app.getHttpAdapter().getInstance();
 
   fastifyInstance.get('/', async (_request, reply) => {
-    reply.send({ message: 'DLC API Root - v0.8.4', status: 'running' });
+    reply.send({ message: 'DLC API Root - v0.8.5', status: 'running' });
   });
 
   // Start listening
   await app.listen(env.apiPort, '0.0.0.0');
 
   console.log('');
-  console.log('✅ DLC API v0.8.4 running securely on port', env.apiPort);
+  console.log('✅ DLC API v0.8.5 running securely on port', env.apiPort);
   console.log('✅ Environment:', env.nodeEnv);
   console.log('✅ Fastify adapter enabled (v4.x compatible)');
   console.log('✅ Helmet security enabled');

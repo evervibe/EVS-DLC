@@ -5,7 +5,7 @@ This document describes the API endpoints that the DLC Web Admin frontend connec
 ## Base URL
 The API base URL is configured via the `VITE_API_URL` environment variable.
 
-Default: `http://localhost:4000`
+Default: `http://localhost:30089`
 
 ## Endpoints
 

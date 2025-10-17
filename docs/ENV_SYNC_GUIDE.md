@@ -203,7 +203,7 @@ pnpm dev
 ### 5. Verify
 
 - Backend: http://localhost:30089/health
-- Frontend: http://localhost:5173
+- Frontend: http://localhost:5174
 - Adminer: http://localhost:8080
 
 ---
