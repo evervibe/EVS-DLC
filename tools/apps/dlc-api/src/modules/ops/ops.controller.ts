@@ -2,12 +2,25 @@ import { Controller, Get } from '@nestjs/common';
 import { dbPools } from '../../common/db';
 import { RedisService } from '../../core/redis/redis.service';
 
-@Controller('health')
-export class HealthController {
+@Controller('ops')
+export class OpsController {
   constructor(private readonly redisService: RedisService) {}
 
-  @Get()
-  async getStatus() {
+  @Get('redis')
+  async getRedisStatus() {
+    const isConnected = this.redisService.isConnected();
+    const keyCount = await this.redisService.count();
+
+    return {
+      status: isConnected ? 'ok' : 'disconnected',
+      timestamp: new Date().toISOString(),
+      connected: isConnected,
+      keys: keyCount,
+    };
+  }
+
+  @Get('db')
+  async getDatabaseStatus() {
     const dbStatus = {
       auth: false,
       game: false,
@@ -23,33 +36,16 @@ export class HealthController {
         connection.release();
         dbStatus[name as keyof typeof dbStatus] = true;
       } catch (error) {
-        console.error(`Health check failed for ${name} database:`, error.message);
+        console.error(`Database health check failed for ${name}:`, error.message);
       }
     }
 
     const allDbsHealthy = Object.values(dbStatus).every(status => status);
-    
-    // Get cache status
-    const cacheStatus = {
-      connected: this.redisService.isConnected(),
-      keys: await this.redisService.count(),
-    };
 
     return {
       status: allDbsHealthy ? 'ok' : 'degraded',
       timestamp: new Date().toISOString(),
-      version: '0.7.1',
       databases: dbStatus,
-      cache: cacheStatus,
-    };
-  }
-
-  @Get('ready')
-  getReadiness() {
-    return {
-      status: 'ready',
-      timestamp: new Date().toISOString(),
     };
   }
 }
-
