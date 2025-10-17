@@ -12,6 +12,15 @@ export interface DatabaseConfig {
   database: string;
 }
 
+export interface CacheConfig {
+  useCache: boolean;
+  redisUrl: string;
+  cacheTTL: number;
+  cachePrefix: string;
+  preloadOnStart: boolean;
+  preloadTables: string;
+}
+
 export interface EnvConfig {
   apiPort: number;
   nodeEnv: string;
@@ -20,6 +29,7 @@ export interface EnvConfig {
   dbGame: DatabaseConfig;
   dbData: DatabaseConfig;
   dbPost: DatabaseConfig;
+  cache: CacheConfig;
 }
 
 function getEnvValue(key: string, defaultValue?: string): string {
@@ -34,6 +44,12 @@ function getEnvValue(key: string, defaultValue?: string): string {
 function getEnvNumber(key: string, defaultValue: number): number {
   const value = process.env[key];
   return value ? parseInt(value, 10) : defaultValue;
+}
+
+function getEnvBoolean(key: string, defaultValue: boolean): boolean {
+  const value = process.env[key];
+  if (value === undefined) return defaultValue;
+  return value.toLowerCase() === 'true' || value === '1';
 }
 
 export const env: EnvConfig = {
@@ -71,5 +87,14 @@ export const env: EnvConfig = {
     user: getEnvValue('DB_POST_USER', 'root'),
     password: getEnvValue('DB_POST_PASS', 'root'),
     database: getEnvValue('DB_POST_NAME', 'db_post'),
+  },
+  
+  cache: {
+    useCache: getEnvBoolean('USE_CACHE', false),
+    redisUrl: getEnvValue('REDIS_URL', 'redis://localhost:6379'),
+    cacheTTL: getEnvNumber('CACHE_TTL', 120),
+    cachePrefix: getEnvValue('CACHE_PREFIX', 'dlc'),
+    preloadOnStart: getEnvBoolean('PRELOAD_ON_START', false),
+    preloadTables: getEnvValue('PRELOAD_TABLES', ''),
   },
 };

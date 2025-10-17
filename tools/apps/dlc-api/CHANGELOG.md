@@ -5,6 +5,94 @@ All notable changes to the DLC API project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2025-10-17 - Redis Cache Layer
+
+### Mission
+Add intelligent caching system with Redis to reduce database load and improve performance for high-frequency data endpoints.
+
+### Added
+- **Redis Integration**: Full Redis connectivity with ioredis
+  - RedisModule with global service provider
+  - RedisService with connection management and health monitoring
+  - Auto-reconnect with exponential backoff
+  - Graceful error handling and logging
+  - Connection status tracking
+  
+- **Cache Layer**: High-level caching service
+  - CacheService with JSON serialization
+  - Lazy caching with `wrap()` method
+  - Direct cache operations: `get()`, `set()`, `invalidate()`, `invalidatePattern()`
+  - Configurable TTL per operation
+  - Graceful degradation when disabled or unavailable
+  
+- **Data Service Caching**: All data endpoints now cached
+  - t_item.service.ts - Cached findAll with 120s TTL
+  - t_skill.service.ts - Cached findAll with 120s TTL
+  - t_skilllevel.service.ts - Cached findAll with 120s TTL
+  - t_string.service.ts - Cached findAll with 120s TTL
+  - Automatic cache invalidation on create/update/delete
+  - Cache keys structured as `table:operation:params`
+  
+- **Health Endpoint Extension**: `/health` now includes Redis metrics
+  - Cache connection status
+  - Total cached keys count
+  - Integrated with existing database health checks
+  
+- **Environment Configuration**: New cache-related variables
+  - `USE_CACHE` - Enable/disable caching globally (default: false)
+  - `REDIS_URL` - Redis connection URL (default: redis://localhost:6379)
+  - `CACHE_TTL` - Default TTL in seconds (default: 120)
+  - `CACHE_PREFIX` - Key prefix for isolation (default: dlc)
+  - `PRELOAD_ON_START` - Preload data on startup (default: false)
+  - `PRELOAD_TABLES` - Comma-separated table names to preload
+  
+- **Data Preloader Service**: Optional cache warming on startup
+  - DataPreloaderService with OnModuleInit hook
+  - Configurable table preloading
+  - Reduces initial latency after deployment
+  
+- **Comprehensive Documentation**:
+  - `docs/CACHE_OVERVIEW.md` - Architecture and usage guide
+  - `docs/REDIS_SETUP_GUIDE.md` - Installation and configuration for all platforms
+  - `docs/ROADMAP_v0.7.0.md` - Next version planning (Auth & RBAC)
+  
+- **Testing**: Full test coverage for cache functionality
+  - 8 new unit tests for CacheService
+  - Tests for cache disabled scenario
+  - Tests for Redis unavailable scenario
+  - Graceful degradation verification
+  - All tests passing (16 total)
+
+### Changed
+- Version bumped from 0.5.0 to 0.6.0
+- Health endpoint version updated to 0.6.0
+- Startup logging enhanced with cache status
+- Environment configuration extended with cache config interface
+
+### Technical Details
+- **Dependencies**: Added `ioredis@5.8.1`
+- **Cache Key Format**: `{prefix}:{table}:{operation}:{params}`
+- **TTL Strategy**: 120s default for all read operations
+- **Invalidation Strategy**: Pattern-based (`table:*`) on all writes
+- **Connection Pooling**: Redis client with max 3 retries per request
+- **Error Handling**: All cache operations catch errors and log gracefully
+- **Performance**: Zero overhead when cache is disabled
+- **Scalability**: Designed for multi-instance deployment
+
+### Development Experience
+- **Zero-dependency mode**: Cache can be completely disabled
+- **Graceful degradation**: API works without Redis connection
+- **Clear logging**: DEBUG level logs for cache hits/misses
+- **Easy testing**: Tests work without Redis installation
+- **Flexible configuration**: Per-operation TTL and pattern-based invalidation
+
+### Breaking Changes
+None - cache is opt-in via `USE_CACHE=true`
+
+### Next Steps
+- v0.7.0: Authentication & RBAC implementation
+- Future: Cache metrics dashboard, advanced preloading strategies
+
 ## [0.5.0] - 2025-10-17 - Infra Sync & Local Boot
 
 ### Mission
