@@ -13,7 +13,10 @@ export class TItemController {
   ): Promise<TItemEntity[]> {
     const limitNum = limit ? parseInt(limit, 10) : undefined;
     const offsetNum = offset ? parseInt(offset, 10) : undefined;
-    return this.service.findAll(limitNum, offsetNum);
+    return this.service.findAll(
+      limitNum && !isNaN(limitNum) ? limitNum : undefined,
+      offsetNum && !isNaN(offsetNum) ? offsetNum : undefined,
+    );
   }
 
   @Get(':id')
