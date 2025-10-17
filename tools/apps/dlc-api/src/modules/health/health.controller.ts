@@ -38,7 +38,7 @@ export class HealthController {
     return {
       status: allDbsHealthy ? 'ok' : 'degraded',
       timestamp: new Date().toISOString(),
-      version: '0.8.1',
+      version: '0.8.2',
       databases: dbStatus,
       cache: cacheStatus,
     };

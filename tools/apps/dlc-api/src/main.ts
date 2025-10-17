@@ -2,14 +2,13 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import helmet from '@fastify/helmet';
-import rateLimit from '@fastify/rate-limit';
 import { AppModule } from './app.module';
 import { env } from './config/env';
 import { testDbConnections } from './common/db';
 import { validationPipe } from './common/middleware';
 
 async function bootstrap() {
-  console.log('🚀 Starting DLC API v0.8.1...');
+  console.log('🚀 Starting DLC API v0.8.2...');
 
   // Test database connections
   try {
@@ -34,7 +33,7 @@ async function bootstrap() {
     contentSecurityPolicy: false,
   });
 
-  await app.register(rateLimit, {
+  await app.register(require('@fastify/rate-limit'), {
     max: 100,
     timeWindow: '1 minute',
   });
@@ -50,7 +49,7 @@ async function bootstrap() {
   const fastifyInstance = app.getHttpAdapter().getInstance();
 
   fastifyInstance.get('/', async (_request, reply) => {
-    reply.send({ message: 'DLC API Root - v0.8.1', status: 'running' });
+    reply.send({ message: 'DLC API Root - v0.8.2', status: 'running' });
   });
 
   app.setNotFoundHandler((request, reply) => {
@@ -68,7 +67,7 @@ async function bootstrap() {
   await app.listen(env.apiPort, '0.0.0.0');
 
   console.log('');
-  console.log('✅ DLC API v0.8.1 ready on port', env.apiPort);
+  console.log('✅ DLC API v0.8.2 ready on port', env.apiPort);
   console.log('✅ Environment:', env.nodeEnv);
   console.log('✅ Fastify adapter enabled');
   console.log('✅ CORS enabled');
