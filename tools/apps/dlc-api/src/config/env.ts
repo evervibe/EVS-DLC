@@ -53,7 +53,7 @@ function getEnvBoolean(key: string, defaultValue: boolean): boolean {
 }
 
 export const env: EnvConfig = {
-  apiPort: getEnvNumber('API_PORT', 4000),
+  apiPort: getEnvNumber('API_PORT', 30089),
   nodeEnv: getEnvValue('NODE_ENV', 'development'),
   jwtSecret: getEnvValue('JWT_SECRET', 'dev-secret'),
   

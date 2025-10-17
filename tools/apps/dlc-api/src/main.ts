@@ -7,13 +7,13 @@ import { testDbConnections } from './common/db';
 
 async function bootstrap() {
   console.log('🚀 Starting DLC API v0.6.0...');
-  
+
   // Test database connections
   try {
     console.log('📊 Testing database connections...');
     await testDbConnections();
     console.log('✅ All database connections successful');
-  } catch (error) {
+  } catch (error: any) {
     console.warn('⚠️  Database connection test failed:', error.message);
     console.warn('⚠️  API will start but database operations may fail.');
     console.warn('💡 Make sure Docker containers are running: cd infra/DB/game && docker compose up -d');
@@ -35,22 +35,26 @@ async function bootstrap() {
 
   // Start listening
   await app.listen(env.apiPort, '0.0.0.0');
-  
+
   console.log('');
   console.log('✅ DLC API v0.6.0 ready on port', env.apiPort);
   console.log('✅ Environment:', env.nodeEnv);
   console.log('✅ Fastify adapter enabled');
-  console.log('✅ Cache enabled:', env.cache.useCache);
-  if (env.cache.useCache) {
-    console.log('   Redis URL:', env.cache.redisUrl);
-    console.log('   Cache TTL:', env.cache.cacheTTL + 's');
+  console.log('✅ CORS enabled');
+
+  if (env.cache?.useCache) {
+    console.log('✅ Cache enabled');
+    console.log('   Redis URL:', env.cache.redisUrl || 'N/A');
+    console.log('   Cache TTL:', env.cache.cacheTTL ? env.cache.cacheTTL + 's' : 'N/A');
   }
+
   console.log('');
   console.log('📍 Health Check: http://localhost:' + env.apiPort + '/health');
+  console.log('📍 API Base: http://localhost:' + env.apiPort);
   console.log('');
 }
 
 bootstrap().catch((error) => {
-  console.error('Failed to start application:', error);
+  console.error('❌ Failed to start application:', error);
   process.exit(1);
 });
