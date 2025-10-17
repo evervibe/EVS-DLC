@@ -5,6 +5,80 @@ All notable changes to the DLC API project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2025-10-17 - Infra Sync & Local Boot
+
+### Mission
+Stabilize local backend infrastructure with Docker MySQL database, eliminating config validation and connection errors.
+
+### Fixed
+- **Config Validation**: Made JWT_SECRET optional with default value 'dev-secret'
+  - No longer blocks startup when auth is not implemented
+  - All environment variables now have sensible defaults
+  - API can start without .env file
+  
+- **Database Configuration**: All DB config fields now optional with defaults
+  - Default host: `localhost`
+  - Default port: `3306`
+  - Default user: `root`
+  - Default password: `root`
+  - Matches Docker Compose infrastructure setup
+  
+- **Database Name Alignment**: Corrected game database name from `db_game` to `db_db`
+  - Matches actual database created by infrastructure scripts
+  - Synchronized .env.example across API and infra folders
+
+### Added
+- **Enhanced Health Endpoint**: `/health` now includes database connection status
+  - Tests all 4 database connections (auth, game, data, post)
+  - Returns 'ok' when all databases are healthy
+  - Returns 'degraded' when some databases are unavailable
+  - Includes individual database status in response
+  
+- **Improved Startup Logging**: Clear status messages and helpful hints
+  - Version number displayed on startup
+  - Database connection test results with emojis
+  - Helpful hint when databases are unavailable
+  - Clean summary of API status after startup
+  - Direct link to health check endpoint
+  
+- **Documentation**:
+  - `docs/CONFIG_SETUP.md` - Complete configuration reference
+  - `docs/LOCAL_DEV_GUIDE.md` - Step-by-step local development guide
+  - Both docs include troubleshooting sections
+  
+- **Infrastructure Sync**:
+  - Updated `infra/DB/game/.env.example` to use 'root' password
+  - Aligned Docker and API configurations for seamless local setup
+
+### Changed
+- Default API port changed from 3000 to 4000
+- Default database passwords changed from empty string to 'root'
+- Environment variable defaults now match Docker Compose setup exactly
+- Health endpoint version updated to 0.5.0
+
+### Technical Details
+- All Joi validation schemas now use `.default()` instead of `.required()`
+- Config validation happens at module load, not runtime
+- Database connection pooling maintained (10 connections per pool)
+- Startup sequence: config load → DB test → app init → listen
+- Health checks use connection pool to test database connectivity
+
+### Development Experience
+- **Zero-config startup**: API works out-of-box with Docker infrastructure
+- **Clear error messages**: Helpful hints when databases are unavailable
+- **Quick validation**: Health endpoint for instant status check
+- **Complete documentation**: Two new guides for configuration and local dev
+
+### Breaking Changes
+None - all changes are additive or use safer defaults
+
+### Dependencies
+No new dependencies added
+
+### Next Steps
+- v0.6.0: Redis + Cache Layer
+- Future: RBAC & Authentication implementation
+
 ## [0.4.0] - 2025-10-17 - Stability & Connectivity Update
 
 ### Fixed

@@ -374,7 +374,7 @@ ${imports}
       host: process.env.DB_DATA_HOST || 'localhost',
       port: parseInt(process.env.DB_DATA_PORT || '3306', 10),
       username: process.env.DB_DATA_USER || 'root',
-      password: process.env.DB_DATA_PASSWORD || '',
+      password: process.env.DB_DATA_PASS || 'root',
       database: process.env.DB_DATA_NAME || 'db_data',
       autoLoadEntities: true,
       synchronize: false,

@@ -42,9 +42,14 @@ describe('Connectivity (e2e)', () => {
 
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body);
-    expect(body.status).toBe('ok');
+    expect(body.status).toMatch(/^(ok|degraded)$/);
     expect(body.timestamp).toBeDefined();
     expect(body.version).toBeDefined();
+    expect(body.databases).toBeDefined();
+    expect(body.databases).toHaveProperty('auth');
+    expect(body.databases).toHaveProperty('game');
+    expect(body.databases).toHaveProperty('data');
+    expect(body.databases).toHaveProperty('post');
   });
 
   it('should return readiness status', async () => {
