@@ -4,19 +4,23 @@ A hybrid backend API built with NestJS + Fastify adapter, providing a structured
 
 ## Version
 
-0.0.1-alpha
+0.3.0 - Full Database Integration
 
 ## Features
 
 - **NestJS Framework**: Structured, modular architecture with dependency injection
 - **Fastify Adapter**: High-performance HTTP server
+- **TypeORM Integration**: Full ORM support with entity mapping and repository pattern
 - **TypeScript**: Full type safety and modern JavaScript features
 - **MySQL Support**: Four separate database connections (auth, game, data, post)
+- **Database Introspection**: Automatic entity generation from database schema
+- **CRUD API Generation**: Auto-generated REST endpoints for all database tables
 - **Modular Design**: Separated modules for auth, game, data, and post
 - **Common Layer**: Shared database, error handling, middleware, and utilities
 - **Validation**: Class-validator for request validation
 - **Error Handling**: Global exception filter with structured error responses
 - **Testing**: Jest setup for unit and e2e tests
+- **Documentation**: Auto-generated schema and API documentation
 
 ## Project Structure
 
@@ -162,7 +166,13 @@ npm run test:cov
 - `POST /game/accounts/:userCode/cash` - Change user cash (requires authentication)
 
 ### Data Module
-- `GET /data/items` - Get data items
+- `GET /data/t_item` - Get all items from t_item table
+- `GET /data/t_item/:id` - Get single item by ID
+- `POST /data/t_item` - Create new item
+- `PUT /data/t_item/:id` - Update item
+- `DELETE /data/t_item/:id` - Delete item
+- Similar endpoints available for: t_string, t_skill, t_skilllevel, t_character
+- See `docs/API_DATA_ENDPOINTS.md` for complete API documentation
 
 ### Post Module
 - `POST /post/logs` - Create a log entry
@@ -210,19 +220,24 @@ throw ApiError.notFound('Resource not found');
 
 ## Technology Stack
 
-- **NestJS** - Progressive Node.js framework
-- **Fastify** - Fast and low overhead web framework
-- **TypeScript** - Typed superset of JavaScript
-- **MySQL2** - MySQL client for Node.js
-- **class-validator** - Decorator-based validation
-- **Jest** - Testing framework
+- **NestJS 10.3** - Progressive Node.js framework
+- **Fastify 4.25** - Fast and low overhead web framework
+- **TypeORM** - ORM for TypeScript and JavaScript
+- **TypeScript 5.3** - Typed superset of JavaScript
+- **MySQL2 3.6** - MySQL client for Node.js
+- **class-validator 0.14** - DTO validation
+- **class-transformer 0.5** - Object transformation
+- **Jest 29** - Testing framework
 
 ## Notes
 
-- This is an alpha version (0.0.1-alpha) - not ready for production
-- Database query logic is currently stubbed with mock data
+- Current version: 0.3.0 - Full Database Integration
+- Database schema is introspected and entities are auto-generated
+- CRUD endpoints are automatically created for all database tables
+- See `CHANGELOG.md` for version history
+- See `docs/DATA_SCHEMA_OVERVIEW.md` for database schema details
+- See `docs/API_DATA_ENDPOINTS.md` for complete API documentation
 - JWT validation is a placeholder and needs proper implementation
-- See migration files for database schema examples
 
 ## License
 
