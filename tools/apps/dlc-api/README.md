@@ -4,23 +4,24 @@ A hybrid backend API built with NestJS + Fastify adapter, providing a structured
 
 ## Version
 
-0.3.0 - Full Database Integration
+0.3.1 - Real Database Schema Alignment
 
 ## Features
 
 - **NestJS Framework**: Structured, modular architecture with dependency injection
 - **Fastify Adapter**: High-performance HTTP server
 - **TypeORM Integration**: Full ORM support with entity mapping and repository pattern
+- **Real Schema Mapping**: All entities accurately reflect MySQL database schema
 - **TypeScript**: Full type safety and modern JavaScript features
 - **MySQL Support**: Four separate database connections (auth, game, data, post)
-- **Database Introspection**: Automatic entity generation from database schema
-- **CRUD API Generation**: Auto-generated REST endpoints for all database tables
+- **Complete CRUD APIs**: REST endpoints for all real database tables
+- **Localization Support**: 26+ language support across all data tables
 - **Modular Design**: Separated modules for auth, game, data, and post
 - **Common Layer**: Shared database, error handling, middleware, and utilities
 - **Validation**: Class-validator for request validation
 - **Error Handling**: Global exception filter with structured error responses
 - **Testing**: Jest setup for unit and e2e tests
-- **Documentation**: Auto-generated schema and API documentation
+- **Documentation**: Complete schema and API documentation
 
 ## Project Structure
 
@@ -116,8 +117,21 @@ DB_POST_NAME=db_post
 Ensure all four MySQL databases exist:
 - `db_auth` - Authentication data
 - `db_db` - Game data
-- `db_data` - Data management
+- `db_data` - Data management (contains t_string, t_item, t_skill, t_skilllevel)
 - `db_post` - Post/logging data
+
+#### Run Migrations
+
+For the `db_data` database, run the schema migration:
+```bash
+mysql -u root -p db_data < migrations/002_real_schema_dump.sql
+```
+
+This will create the following tables:
+- `t_string` - Localized strings (26 languages)
+- `t_item` - Item definitions (170+ columns)
+- `t_skill` - Skill definitions (160+ columns)
+- `t_skilllevel` - Skill progression data (46 columns)
 
 You can use the Docker setup from `infra/DB/game/` to run MySQL locally.
 
@@ -165,14 +179,39 @@ npm run test:cov
 - `GET /game/items` - Get game items (with optional filters)
 - `POST /game/accounts/:userCode/cash` - Change user cash (requires authentication)
 
-### Data Module
-- `GET /data/t_item` - Get all items from t_item table
-- `GET /data/t_item/:id` - Get single item by ID
-- `POST /data/t_item` - Create new item
-- `PUT /data/t_item/:id` - Update item
-- `DELETE /data/t_item/:id` - Delete item
-- Similar endpoints available for: t_string, t_skill, t_skilllevel, t_character
-- See `docs/API_DATA_ENDPOINTS.md` for complete API documentation
+### Data Module (db_data)
+
+All data endpoints follow the pattern: `/data/{table}/:id?`
+
+#### Available Tables
+- **t_string** - Localized strings (26 languages)
+- **t_item** - Item definitions (170+ columns)
+- **t_skill** - Skill definitions (160+ columns)
+- **t_skilllevel** - Skill level progression (46 columns)
+
+#### CRUD Operations (available for all tables)
+- `GET /data/{table}` - List all records (supports `?limit=N&offset=N` for pagination)
+- `GET /data/{table}/:id` - Get single record by a_index
+- `POST /data/{table}` - Create new record
+- `PUT /data/{table}/:id` - Update existing record
+- `DELETE /data/{table}/:id` - Delete record
+
+#### Examples
+```bash
+# Get all items with pagination
+GET /data/t_item?limit=20&offset=0
+
+# Get specific item
+GET /data/t_item/1
+
+# Get all localized strings
+GET /data/t_string
+
+# Get all skills
+GET /data/t_skill
+```
+
+**Note**: See `docs/API_DATA_ENDPOINTS.md` for complete API documentation with request/response examples.
 
 ### Post Module
 - `POST /post/logs` - Create a log entry
@@ -229,16 +268,21 @@ If the script fails, check for these common issues:
   - Script will complete but generate no entities
   - Populate database with schema first
 
-#### Using Mock Data
-For development without database access:
+#### Using Mock Data (Legacy)
+**Note**: As of v0.3.1, all entities reflect the real database schema. The mock generation script is deprecated but available for reference:
 
 ```bash
 npm run generate:mock
 ```
 
-This generates sample entities for the following tables without requiring database connection:
-- `t_item` - Game items (6 columns)
-- `t_string` - String localization (4 columns)
+This was previously used to generate sample entities without database access. Current entities are now based on actual schema.
+
+## Documentation
+
+- **Schema Reference**: `docs/DATA_SCHEMA_OVERVIEW.md` - Complete database schema with all tables and columns
+- **API Documentation**: `docs/API_DATA_ENDPOINTS.md` - Full API reference with examples
+- **Implementation Notes**: `docs/IMPLEMENTATION_SUMMARY_v0.3.1.md` - Technical details and change summary
+- **Migration Files**: `migrations/002_real_schema_dump.sql` - Database schema DDL
 - `t_skill` - Skills (5 columns)
 - `t_skilllevel` - Skill levels (5 columns)
 - `t_character` - Characters (6 columns)
