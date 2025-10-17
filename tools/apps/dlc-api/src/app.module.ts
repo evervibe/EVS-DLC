@@ -7,6 +7,7 @@ import { GameModule } from './modules/game/game.module';
 import { DataModule } from './modules/data/data.module';
 import { PostModule } from './modules/post/post.module';
 import { HealthModule } from './modules/health/health.module';
+import { OpsModule } from './modules/ops/ops.module';
 import { GlobalExceptionFilter } from './common/errors';
 import { validationPipe } from './common/middleware';
 import { RedisModule } from './core/redis/redis.module';
@@ -65,6 +66,7 @@ import { CacheModule } from './core/cache/cache.module';
     DataModule,
     PostModule,
     HealthModule,
+    OpsModule,
   ],
   providers: [
     {
