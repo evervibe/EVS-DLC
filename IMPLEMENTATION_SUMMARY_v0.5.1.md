@@ -37,10 +37,10 @@ Perform a **complete technical audit** and apply **auto-fixes** to ensure stable
 
 ### Scope
 
-1. Backend API (dlc-api) - NestJS + Fastify
-2. Frontend (dlc-dev-studios/frontend) - React + Vite
-3. Infrastructure (infra/DB) - MySQL + Redis (prepared)
-4. Documentation - Complete system guides
+1. **Backend API** - tools/apps/dlc-api (NestJS + Fastify)
+2. **Frontend Web Admin** - tools/apps/dlc-dev-studios/frontend (React + Vite)
+3. **Infrastructure** - infra/DB (MySQL + Redis prepared)
+4. **Documentation** - Complete system guides
 
 ---
 
@@ -307,7 +307,7 @@ Time:        8.176 s
 ```bash
 ✅ Backend default: 30089
 ✅ Frontend URLs: 30089
-✅ Compiled code: 30089
+✅ Build verification: 30089 (checked, not committed)
 ✅ Documentation: 30089
 ```
 
@@ -581,7 +581,7 @@ Existing functionality preserved:
 - [x] Frontend VITE_API_URL uses port 30089
 - [x] Frontend VITE_API_HEALTH_URL uses port 30089
 - [x] All documentation references port 30089
-- [x] Compiled code uses port 30089
+- [x] Build output verified (not committed to repo)
 
 ### Version Synchronization
 - [x] Backend package.json = 0.5.1
