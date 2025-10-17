@@ -22,11 +22,11 @@ The DLC Web Admin v0.3.0+env introduces a comprehensive environment configuratio
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
-| `VITE_API_URL` | Base API URL | - | `http://localhost:4000/api` |
+| `VITE_API_URL` | Base API URL | - | `http://localhost:30089` |
 | `VITE_API_TIMEOUT` | API request timeout (ms) | `8000` | `8000` |
-| `VITE_API_HEALTH_URL` | API health check endpoint | - | `http://localhost:4000/health` |
-| `VITE_REDIS_HEALTH_URL` | Redis health check endpoint | - | `http://localhost:4000/ops/redis` |
-| `VITE_DB_HEALTH_URL` | Database health check endpoint | - | `http://localhost:4000/ops/db` |
+| `VITE_API_HEALTH_URL` | API health check endpoint | - | `http://localhost:30089/health` |
+| `VITE_REDIS_HEALTH_URL` | Redis health check endpoint | - | `http://localhost:30089/ops/redis` |
+| `VITE_DB_HEALTH_URL` | Database health check endpoint | - | `http://localhost:30089/ops/db` |
 
 ### Feature Flags
 
@@ -58,10 +58,10 @@ VITE_APP_NAME=DLC Web Admin
 VITE_APP_VERSION=0.3.0+env
 
 # API Configuration
-VITE_API_URL=http://localhost:4000/api
-VITE_API_HEALTH_URL=http://localhost:4000/health
-VITE_REDIS_HEALTH_URL=http://localhost:4000/ops/redis
-VITE_DB_HEALTH_URL=http://localhost:4000/ops/db
+VITE_API_URL=http://localhost:30089
+VITE_API_HEALTH_URL=http://localhost:30089/health
+VITE_REDIS_HEALTH_URL=http://localhost:30089/ops/redis
+VITE_DB_HEALTH_URL=http://localhost:30089/ops/db
 VITE_API_TIMEOUT=8000
 
 # Feature Flags
@@ -100,7 +100,7 @@ import { ENV } from '@/core/config/env';
 
 // Access configuration
 console.log(ENV.APP_NAME);        // "DLC Web Admin"
-console.log(ENV.API_URL);         // "http://localhost:4000/api"
+console.log(ENV.API_URL);         // "http://localhost:30089"
 console.log(ENV.API_TIMEOUT);     // 8000
 console.log(ENV.ENABLE_DEBUG_PANEL); // true
 ```
@@ -158,7 +158,7 @@ Configure different URLs for each environment:
 
 ```bash
 # Development
-VITE_API_URL=http://localhost:4000/api
+VITE_API_URL=http://localhost:30089
 
 # Production
 VITE_API_URL=https://api.production.com/api
@@ -218,9 +218,9 @@ Ensure the backend endpoints are available:
 
 ```bash
 # Test endpoints manually
-curl http://localhost:4000/health
-curl http://localhost:4000/ops/redis
-curl http://localhost:4000/ops/db
+curl http://localhost:30089/health
+curl http://localhost:30089/ops/redis
+curl http://localhost:30089/ops/db
 ```
 
 ## Migration from v0.0.1
@@ -237,7 +237,7 @@ If upgrading from v0.0.1-alpha:
 After configuring the environment:
 
 1. Start the development server: `pnpm dev`
-2. Visit Health Monitor: `http://localhost:5173/health`
+2. Visit Health Monitor: `http://localhost:5174/health`
 3. Verify all services are online
 4. Configure additional settings in Settings page
 

@@ -7,19 +7,24 @@ export interface HealthStatus {
 }
 
 export async function checkHealth(): Promise<HealthStatus> {
-  try {
-    const [api, redis, db] = await Promise.all([
-      fetch(ENV.API_HEALTH_URL),
-      fetch(ENV.REDIS_HEALTH_URL),
-      fetch(ENV.DB_HEALTH_URL)
-    ]);
-    return {
-      api: api.ok,
-      redis: redis.ok,
-      db: db.ok,
-    };
-  } catch (err) {
-    console.error('Health check failed', err);
-    return { api: false, redis: false, db: false };
-  }
+  const endpoints = [
+    { key: 'api' as const, url: ENV.API_HEALTH_URL },
+    { key: 'redis' as const, url: ENV.REDIS_HEALTH_URL },
+    { key: 'db' as const, url: ENV.DB_HEALTH_URL },
+  ]
+
+  const responses = await Promise.allSettled(endpoints.map((endpoint) => fetch(endpoint.url)))
+
+  return responses.reduce<HealthStatus>((status, result, index) => {
+    const key = endpoints[index].key
+
+    if (result.status === 'fulfilled') {
+      status[key] = result.value.ok
+    } else {
+      console.warn(`Health check for ${key} failed`, result.reason)
+      status[key] = false
+    }
+
+    return status
+  }, { api: false, redis: false, db: false })
 }

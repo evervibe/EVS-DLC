@@ -391,14 +391,14 @@ cd tools/apps/dlc-dev-studios/frontend && pnpm dev
 Output:
 VITE v6.0.5  ready in 423 ms
 
-➜  Local:   http://localhost:5173/
+➜  Local:   http://localhost:5174/
 ➜  Network: use --host to expose
 ➜  press h + enter to show help
 ```
 
 ### Browser Dashboard
 
-**URL:** http://localhost:5173/health-monitor
+**URL:** http://localhost:5174/health-monitor
 
 **Display:**
 ```
@@ -416,7 +416,7 @@ Strings: connected
 ### Service Communication
 
 ```
-✅ Frontend (5173) ──HTTP──→ Backend (30089)
+✅ Frontend (5174) ──HTTP──→ Backend (30089)
 ✅ Backend (30089) ──TCP───→ MySQL (3306)
 ✅ CORS: Enabled and verified
 ✅ Health: /health endpoint working

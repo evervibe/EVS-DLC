@@ -2,9 +2,9 @@ import { Card } from '@/tools/ui/components/Card';
 
 export function SettingsPage() {
   const envVars = {
-    'API URL': import.meta.env.VITE_API_URL || 'http://localhost:4000',
+    'API URL': import.meta.env.VITE_API_URL || 'http://localhost:30089',
     'App Name': import.meta.env.VITE_APP_NAME || 'DLC Web Admin',
-    'App Version': import.meta.env.VITE_APP_VERSION || '0.0.1-alpha',
+    'App Version': import.meta.env.VITE_APP_VERSION || '0.8.5',
   };
 
   return (

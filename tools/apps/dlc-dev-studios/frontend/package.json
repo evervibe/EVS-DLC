@@ -1,6 +1,6 @@
 {
   "name": "dlc-web-admin",
-  "version": "0.8.1",
+  "version": "0.8.5",
   "private": true,
   "description": "DLC Web Admin Interface for EverVibe Studios DLC-Dev Ecosystem",
   "type": "module",

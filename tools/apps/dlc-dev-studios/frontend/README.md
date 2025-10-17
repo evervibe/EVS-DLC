@@ -4,7 +4,7 @@ A production-ready React/Vite frontend application for managing DLC API data.
 
 ## Version
 
-**0.3.0+env** - Environment Configuration Release
+**0.8.5** - HTTP Dev Bridge Patch
 
 ## Features
 
@@ -61,12 +61,13 @@ cp .env.example .env
 ```env
 VITE_APP_ENV=development
 VITE_APP_NAME=DLC Web Admin
-VITE_APP_VERSION=0.3.0+env
+VITE_APP_VERSION=0.8.5
 
-VITE_API_URL=http://localhost:4000/api
-VITE_API_HEALTH_URL=http://localhost:4000/health
-VITE_REDIS_HEALTH_URL=http://localhost:4000/ops/redis
-VITE_DB_HEALTH_URL=http://localhost:4000/ops/db
+VITE_API_URL=http://localhost:30089
+# Optional overrides if your backend uses custom paths
+# VITE_API_HEALTH_URL=http://localhost:30089/health
+# VITE_REDIS_HEALTH_URL=http://localhost:30089/ops/redis
+# VITE_DB_HEALTH_URL=http://localhost:30089/ops/db
 VITE_API_TIMEOUT=8000
 VITE_DATA_CACHE=true
 
@@ -83,7 +84,7 @@ Start the development server:
 pnpm dev
 ```
 
-The application will open at `http://localhost:5173`
+The application will open at `http://localhost:5174`
 
 ## Build
 
@@ -162,7 +163,7 @@ frontend/
 - Navigation to all modules
 - Environment information display
 
-### Health Monitor (NEW in v0.3.0+env)
+### Health Monitor (Refined in v0.8.5)
 - Real-time monitoring of:
   - API Server status
   - Redis Cache status
@@ -209,7 +210,7 @@ See `docs/API_BINDINGS.md` for complete API documentation.
 
 ## Environment Configuration
 
-v0.3.0+env introduces comprehensive environment configuration:
+v0.8.5 introduces a simplified HTTP bridge configuration:
 
 **Core Configuration:**
 - `ENV.APP_ENV` - Application environment
@@ -302,7 +303,7 @@ See [docs/FRONTEND_ENV_SETUP.md](docs/FRONTEND_ENV_SETUP.md) for complete docume
 |----------|-------------|---------|
 | `VITE_APP_ENV` | Application environment | - |
 | `VITE_APP_NAME` | Application name | `DLC Web Admin` |
-| `VITE_APP_VERSION` | Application version | `0.3.0+env` |
+| `VITE_APP_VERSION` | Application version | `0.8.5` |
 | `VITE_API_URL` | Backend API URL | - |
 | `VITE_API_TIMEOUT` | API timeout (ms) | `8000` |
 | `VITE_API_HEALTH_URL` | API health endpoint | - |
@@ -312,29 +313,28 @@ See [docs/FRONTEND_ENV_SETUP.md](docs/FRONTEND_ENV_SETUP.md) for complete docume
 | `VITE_ENABLE_DEBUG_PANEL` | Enable debug panel | `false` |
 | `VITE_LOG_LEVEL` | Logging level | `info` |
 
-## What's New in v0.3.0+env
+## What's New in v0.8.5
 
 ✨ **Major Updates:**
-- Comprehensive environment configuration system
-- Real-time health monitoring for API, Redis, and Database
-- Reorganized architecture with `/core` infrastructure
-- Developer tools infrastructure (search, compare, export, import)
-- Enhanced documentation and roadmap
+- Single `VITE_API_URL` source with automatic health endpoint derivation
+- HTTP-only bridge aligned with DLC API CORS policy
+- Vite dev server standardised on port 5174
+- Health monitor resiliency improvements (Promise.allSettled)
 
 🔧 **Infrastructure:**
-- Centralized ENV configuration
-- Type-safe environment access
-- Configurable API client with timeout
-- Health check system with auto-refresh
+- Normalised environment defaults with trailing slash trimming
+- Updated settings panel defaults for v0.8.5
+- Hardened health polling against optional service outages
+- Preconfigured proxy for `/health` and `/ops/*` endpoints
 
 📝 **Documentation:**
-- Complete environment setup guide
-- v0.4.0 roadmap (Auth & RBAC)
-- Updated changelog and structure overview
+- Updated environment setup guide for HTTP mode
+- Added bridge and dev HTTP overview references
+- Refreshed configuration tables with new defaults
 
 ## Roadmap
 
-**Current:** v0.3.0+env - Environment Configuration & Health Monitoring
+**Current:** v0.8.5 - HTTP Dev Bridge & Health Monitoring Refinements
 **Next:** v0.4.0 - Authentication & RBAC
 
 See [docs/ROADMAP_v0.4.0.md](docs/ROADMAP_v0.4.0.md) for detailed plans.

@@ -4,8 +4,8 @@
 
 This guide explains how environment variables link between the frontend (DLC Web Admin) and backend (DLC API) applications, ensuring proper synchronization and communication.
 
-**Version:** 0.5.1  
-**Last Updated:** 2025-10-17
+**Version:** 0.8.5
+**Last Updated:** 2025-11-20
 
 ---
 
@@ -16,8 +16,11 @@ This guide explains how environment variables link between the frontend (DLC Web
 │  Frontend .env                                       │
 │  tools/apps/dlc-dev-studios/frontend/.env          │
 │                                                      │
-│  VITE_API_URL=http://localhost:30089/api           │
-│  VITE_API_HEALTH_URL=http://localhost:30089/health │
+│  VITE_API_URL=http://localhost:30089                │
+│  # Optional overrides                              │
+│  # VITE_API_HEALTH_URL=http://localhost:30089/health │
+│  # VITE_REDIS_HEALTH_URL=http://localhost:30089/ops/redis │
+│  # VITE_DB_HEALTH_URL=http://localhost:30089/ops/db │
 └──────────────────┬───────────────────────────────────┘
                    │
                    │ Compiled into JavaScript
@@ -63,21 +66,30 @@ This guide explains how environment variables link between the frontend (DLC Web
 
 ### Required Variables
 
-```bash
-# Application Metadata
-VITE_APP_ENV=development
-VITE_APP_NAME=DLC Web Admin
-VITE_APP_VERSION=0.5.1
+Only the base API URL is required in `.env` for the new HTTP bridge mode:
 
-# API Configuration
-VITE_API_URL=http://localhost:30089/api
+```bash
+VITE_API_URL=http://localhost:30089
+```
+
+### Optional Overrides
+
+Override these values only if your backend uses non-standard routes:
+
+```bash
+# Health endpoints (automatically derived from VITE_API_URL if omitted)
 VITE_API_HEALTH_URL=http://localhost:30089/health
 VITE_REDIS_HEALTH_URL=http://localhost:30089/ops/redis
 VITE_DB_HEALTH_URL=http://localhost:30089/ops/db
+
+# Frontend metadata (defaults baked into the app)
+VITE_APP_ENV=development
+VITE_APP_NAME=DLC Web Admin
+VITE_APP_VERSION=0.8.5
+
+# Behaviour toggles
 VITE_API_TIMEOUT=8000
 VITE_DATA_CACHE=true
-
-# Debug Configuration
 VITE_ENABLE_DEBUG_PANEL=true
 VITE_LOG_LEVEL=debug
 ```
@@ -86,13 +98,13 @@ VITE_LOG_LEVEL=debug
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
+| `VITE_API_URL` | string | `http://localhost:30089` | Base URL for all API requests |
+| `VITE_API_HEALTH_URL` | string | `${VITE_API_URL}/health` | Health check endpoint (derived) |
+| `VITE_REDIS_HEALTH_URL` | string | `${VITE_API_URL}/ops/redis` | Redis health endpoint (derived) |
+| `VITE_DB_HEALTH_URL` | string | `${VITE_API_URL}/ops/db` | Database health endpoint (derived) |
 | `VITE_APP_ENV` | string | `development` | Application environment |
 | `VITE_APP_NAME` | string | `DLC Web Admin` | Application display name |
-| `VITE_APP_VERSION` | string | `0.5.1` | Application version |
-| `VITE_API_URL` | string | `http://localhost:30089/api` | Base URL for API data endpoints |
-| `VITE_API_HEALTH_URL` | string | `http://localhost:30089/health` | Health check endpoint |
-| `VITE_REDIS_HEALTH_URL` | string | `http://localhost:30089/ops/redis` | Redis health endpoint (future) |
-| `VITE_DB_HEALTH_URL` | string | `http://localhost:30089/ops/db` | Database health endpoint (future) |
+| `VITE_APP_VERSION` | string | `0.8.5` | Application version |
 | `VITE_API_TIMEOUT` | number | `8000` | API request timeout in ms |
 | `VITE_DATA_CACHE` | boolean | `true` | Enable client-side data caching |
 | `VITE_ENABLE_DEBUG_PANEL` | boolean | `true` | Show debug panel in development |
@@ -186,7 +198,7 @@ DB_POST_NAME=db_post
 API_PORT=30089
 
 # Frontend MUST use the same port
-VITE_API_URL=http://localhost:30089/api
+VITE_API_URL=http://localhost:30089
 VITE_API_HEALTH_URL=http://localhost:30089/health
 ```
 
@@ -194,11 +206,11 @@ VITE_API_HEALTH_URL=http://localhost:30089/health
 ```bash
 # ❌ WRONG - Ports don't match
 API_PORT=30089  # Backend
-VITE_API_URL=http://localhost:4000/api  # Frontend (old port)
+VITE_API_URL=http://localhost:4000  # Frontend (old port)
 
 # ✅ CORRECT - Ports match
 API_PORT=30089  # Backend
-VITE_API_URL=http://localhost:30089/api  # Frontend
+VITE_API_URL=http://localhost:30089  # Frontend
 ```
 
 ### URL Path Synchronization
@@ -316,7 +328,7 @@ Use Vite's proxy when:
 ```typescript
 export default defineConfig({
   server: {
-    port: 5173,
+    port: 5174,
     proxy: {
       '/api': {
         target: 'http://localhost:30089',

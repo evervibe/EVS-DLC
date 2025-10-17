@@ -1,6 +1,6 @@
 # EVS-DLC - EverVibe Studios DLC Development Ecosystem
 
-**Version:** 0.5.1 (Stable Multi-App Sync)  
+**Version:** 0.8.5 (HTTP Dev Bridge Patch)
 **Status:** ✅ Production Ready for Development
 
 Complete development ecosystem for DLC content management, featuring a NestJS backend API and React frontend admin interface.
@@ -35,7 +35,7 @@ pnpm install
 pnpm dev
 
 # 4. Open browser
-open http://localhost:5173
+open http://localhost:5174
 ```
 
 **Health Check:** http://localhost:30089/health
@@ -50,6 +50,9 @@ Comprehensive guides available in `/docs/`:
 - **[Frontend ENV Sync Guide](./docs/FRONTEND_ENV_SYNC_GUIDE.md)** - Environment variable synchronization
 - **[Backend Boot Flow](./docs/BACKEND_BOOT_FLOW.md)** - Bootstrap process documentation
 - **[Infrastructure Status Report](./docs/INFRA_STATUS_REPORT_v0.5.1.md)** - Complete system overview
+- **[Frontend ↔ Backend Bridge Guide](./docs/FRONTEND_BACKEND_BRIDGE_GUIDE.md)** - Local HTTP connection walkthrough
+- **[HTTP Development Mode Overview](./docs/DEV_HTTP_MODE_OVERVIEW.md)** - Summary of the 0.8.5 HTTP workflow
+- **[Changelog v0.8.5](./docs/CHANGELOG_v0.8.5.md)** - Detailed release notes
 
 ---
 
@@ -63,7 +66,7 @@ Comprehensive guides available in `/docs/`:
 │   React 19       │         │   NestJS 10      │         │   - db_auth      │
 │   Vite 6         │         │   Fastify 4      │         │   - db_db        │
 │   TypeScript 5   │         │   TypeORM 0.3    │         │   - db_data      │
-│   Port: 5173     │         │   Port: 30089    │         │   - db_post      │
+│   Port: 5174     │         │   Port: 30089    │         │   - db_post      │
 └──────────────────┘         └──────────────────┘         └──────────────────┘
 ```
 
@@ -161,12 +164,15 @@ DB_AUTH_NAME=db_auth
 ### Frontend Configuration
 ```bash
 # API Connection
-VITE_API_URL=http://localhost:30089/api
-VITE_API_HEALTH_URL=http://localhost:30089/health
+VITE_API_URL=http://localhost:30089
+# Optional overrides
+# VITE_API_HEALTH_URL=http://localhost:30089/health
+# VITE_REDIS_HEALTH_URL=http://localhost:30089/ops/redis
+# VITE_DB_HEALTH_URL=http://localhost:30089/ops/db
 
 # Application
 VITE_APP_ENV=development
-VITE_APP_VERSION=0.5.1
+VITE_APP_VERSION=0.8.5
 ```
 
 **Note:** Both apps work with zero configuration using sensible defaults!
@@ -214,7 +220,7 @@ curl http://localhost:30089/health | jq
 ```
 
 ### Web Interface
-Open **Health Monitor Dashboard**: http://localhost:5173/health-monitor
+Open **Health Monitor Dashboard**: http://localhost:5174/health-monitor
 
 Features:
 - Real-time service status
@@ -271,7 +277,7 @@ docker compose ps
 2. Start API: `pnpm dev`
 3. Start frontend: `pnpm dev`
 4. Code and test
-5. Check health: http://localhost:5173/health-monitor
+5. Check health: http://localhost:5174/health-monitor
 
 ### Making Changes
 1. Edit code (hot reload enabled)
@@ -322,26 +328,22 @@ pnpm build
 
 ---
 
-## 📦 What's New in v0.5.1
+## 📦 What's New in v0.8.5
 
 ### ✨ Features
-- 🔧 Standardized API port to 30089
-- 🔄 Complete frontend-backend synchronization
-- 📚 Comprehensive documentation suite
-- ⚙️ Redis service prepared (v0.6.0)
-- 🔍 Enhanced logging and monitoring
+- 🌉 Single-source API URL handling for the admin UI with automatic health endpoint derivation.
+- 🚀 Vite dev server standardised on port **5174** for the HTTP bridge workflow.
+- 🔐 Backend CORS tightened to an explicit origin list while maintaining credential support.
 
 ### 🐛 Fixes
-- ✅ CORS configuration verified
-- ✅ Health endpoint path confirmed
-- ✅ Environment variable alignment
-- ✅ Build process validation
+- ✅ Resolved dashboard "Failed to fetch health status" errors by hardening the polling logic.
+- ✅ Normalised environment defaults (no trailing slashes, HTTP protocol enforced).
+- ✅ Updated health messaging and version banners to reflect v0.8.5 across the stack.
 
 ### 📖 Documentation
-- System Health Check Guide
-- Frontend ENV Sync Guide
-- Backend Boot Flow
-- Infrastructure Status Report
+- New Frontend ↔ Backend Bridge Guide
+- New HTTP Development Mode Overview
+- Changelog v0.8.5 plus refreshed environment sync instructions
 
 ---
 
@@ -401,7 +403,7 @@ All rights reserved.
 
 ### Health Checks
 - API Health: http://localhost:30089/health
-- Frontend Monitor: http://localhost:5173/health-monitor
+- Frontend Monitor: http://localhost:5174/health-monitor
 - Database Admin: http://localhost:8080
 
 ---
@@ -420,4 +422,4 @@ All rights reserved.
 ---
 
 **Built with ❤️ by EverVibe Studios**  
-**Version:** 0.5.1 | **Updated:** 2025-10-17
+**Version:** 0.8.5 | **Updated:** 2025-11-20
