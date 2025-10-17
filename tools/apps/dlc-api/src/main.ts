@@ -8,7 +8,7 @@ import { testDbConnections } from './common/db';
 import { validationPipe, RateLimitMiddleware } from './common/middleware';
 
 async function bootstrap() {
-  console.log('🚀 Starting DLC API v0.8.3...');
+  console.log('🚀 Starting DLC API v0.8.4...');
 
   // Test database connections
   try {
@@ -25,50 +25,38 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      logger: false,
+      logger: true,
     }),
   );
 
-  await app.register(helmet, {
-    contentSecurityPolicy: false,
-  });
-
-  app.useGlobalPipes(validationPipe);
-
-  // Enable CORS
   app.enableCors({
     origin: 'http://localhost:5173',
     credentials: true,
   });
 
+  app.useGlobalPipes(validationPipe);
+
   const rateLimitMiddleware = new RateLimitMiddleware();
   app.use(rateLimitMiddleware.use.bind(rateLimitMiddleware));
+
+  await app.register(helmet, { global: true });
 
   const fastifyInstance = app.getHttpAdapter().getInstance();
 
   fastifyInstance.get('/', async (_request, reply) => {
-    reply.send({ message: 'DLC API Root - v0.8.3', status: 'running' });
-  });
-
-  app.setNotFoundHandler((request, reply) => {
-    reply.status(404).send({
-      success: false,
-      statusCode: 404,
-      message: 'Route not found',
-      errorCode: 'NOT_FOUND',
-      timestamp: new Date().toISOString(),
-      path: request.url,
-    });
+    reply.send({ message: 'DLC API Root - v0.8.4', status: 'running' });
   });
 
   // Start listening
   await app.listen(env.apiPort, '0.0.0.0');
 
   console.log('');
-  console.log('✅ DLC API v0.8.3 ready on port', env.apiPort);
+  console.log('✅ DLC API v0.8.4 running securely on port', env.apiPort);
   console.log('✅ Environment:', env.nodeEnv);
-  console.log('✅ Fastify adapter enabled');
+  console.log('✅ Fastify adapter enabled (v4.x compatible)');
+  console.log('✅ Helmet security enabled');
   console.log('✅ CORS enabled');
+  console.log('✅ Rate-Limit middleware active');
 
   if (env.cache?.useCache) {
     console.log('✅ Cache enabled');
