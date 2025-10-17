@@ -116,7 +116,11 @@ PRELOAD_TABLES=t_item,t_skill,t_skilllevel,t_string
 ### Check Cache Status
 
 ```bash
+# With jq (install: apt install jq or brew install jq)
 curl http://localhost:4000/health | jq '.cache'
+
+# Without jq
+curl http://localhost:4000/health
 ```
 
 ### View Cached Keys (Redis CLI)
