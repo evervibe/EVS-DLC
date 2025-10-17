@@ -5,6 +5,60 @@ All notable changes to the DLC API project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-10-17 - Stability & Connectivity Update
+
+### Fixed
+- **MySQL Connection Handling**: Fixed "Access denied (using password: NO)" error
+  - Standardized password environment variables to use `_PASS` suffix
+  - Updated all modules to use consistent variable names
+  - Environment variables: `DB_AUTH_PASS`, `DB_GAME_PASS`, `DB_DATA_PASS`, `DB_POST_PASS`
+
+### Added
+- **Environment Validation**: Implemented Joi schema validation via @nestjs/config
+  - Validates all required database connection variables at startup
+  - Provides clear error messages for missing or invalid configuration
+  - Global ConfigModule with validation schema
+  
+- **Database Connection Utilities**:
+  - Created `src/utils/db-checker.ts` for connection testing
+  - Automatic connection validation on application startup
+  - Clear console logs for each database connection status
+  
+- **Health & Readiness Endpoints**:
+  - `GET /health` - Returns API status, timestamp, and version
+  - `GET /health/ready` - Returns readiness status for load balancers
+  - HealthModule with dedicated controller
+  
+- **Entity Relationships**:
+  - Added `@OneToMany` relationship: TSkill → TSkillLevel
+  - Added `@ManyToOne` relationship: TSkillLevel → TSkill
+  - Maintains `synchronize: false` to prevent schema changes
+  
+- **Documentation**:
+  - `docs/DB_CONNECTION_GUIDE.md` - Comprehensive MySQL setup and troubleshooting guide
+  - Covers Docker setup, environment variables, common errors, and production best practices
+  
+- **Testing**:
+  - `tests/connectivity.e2e-spec.ts` - E2E tests for health endpoints
+  - Validates API health and readiness checks
+
+### Changed
+- Updated `.env.example` with consistent variable naming (`_PASS` instead of `_PASSWORD`)
+- Enhanced AppModule with ConfigModule integration
+- Improved error handling and logging for database connections
+
+### Technical Details
+- Added dependency: `joi@18.0.1` for environment validation
+- All database modules now use consistent environment variable names
+- Connection pooling maintained (10 connections per pool)
+- Health endpoints follow REST conventions for monitoring
+
+### Dependencies
+- Added: `joi@18.0.1`
+
+### Notes
+This release focuses on stability and reliability of database connections. The standardized environment variable naming (`_PASS`) and validation ensures consistent configuration across all deployment environments.
+
 ## [0.3.1] - 2025-10-17 - Real Database Alignment & Schema Correction
 
 ### Fixed

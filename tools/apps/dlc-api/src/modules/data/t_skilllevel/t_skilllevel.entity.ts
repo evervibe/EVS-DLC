@@ -1,9 +1,14 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { TSkillEntity } from '../t_skill/t_skill.entity';
 
 @Entity('t_skilllevel')
 export class TSkilllevelEntity {
   @PrimaryColumn({ type: 'int' })
   a_index: number;
+
+  @ManyToOne(() => TSkillEntity, (skill) => skill.levels)
+  @JoinColumn({ name: 'a_index', referencedColumnName: 'a_index' })
+  skill: TSkillEntity;
 
   @Column({ type: 'tinyint', default: 0 })
   a_level: number;
