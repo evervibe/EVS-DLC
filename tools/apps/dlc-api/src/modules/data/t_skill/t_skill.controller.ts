@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { TSkillService } from './t_skill.service';
 import { TSkillEntity } from './t_skill.entity';
 
@@ -7,8 +7,13 @@ export class TSkillController {
   constructor(private readonly service: TSkillService) {}
 
   @Get()
-  async findAll(): Promise<TSkillEntity[]> {
-    return this.service.findAll();
+  async findAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<TSkillEntity[]> {
+    const limitNum = limit ? parseInt(limit, 10) : undefined;
+    const offsetNum = offset ? parseInt(offset, 10) : undefined;
+    return this.service.findAll(limitNum, offsetNum);
   }
 
   @Get(':id')
