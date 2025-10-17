@@ -15,7 +15,7 @@ import { validationPipe } from './common/middleware';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        API_PORT: Joi.number().default(3000),
+        API_PORT: Joi.number().default(30089),
         NODE_ENV: Joi.string().default('development'),
         JWT_SECRET: Joi.string().default('dev-secret'),
         

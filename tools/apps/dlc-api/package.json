@@ -1,6 +1,6 @@
 {
   "name": "dlc-api",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "DLC Hybrid Backend API with NestJS + Fastify",
   "author": "",
   "private": true,

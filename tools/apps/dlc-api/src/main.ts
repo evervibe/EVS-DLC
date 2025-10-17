@@ -6,7 +6,7 @@ import { env } from './config/env';
 import { testDbConnections } from './common/db';
 
 async function bootstrap() {
-  console.log('🚀 Starting DLC API v0.5.0...');
+  console.log('🚀 Starting DLC API v0.5.1...');
   
   // Test database connections
   try {
@@ -40,8 +40,10 @@ async function bootstrap() {
   console.log('✅ DLC API läuft auf Port', env.apiPort);
   console.log('✅ Environment:', env.nodeEnv);
   console.log('✅ Fastify adapter enabled');
+  console.log('✅ CORS enabled');
   console.log('');
   console.log('📍 Health Check: http://localhost:' + env.apiPort + '/health');
+  console.log('📍 API Base: http://localhost:' + env.apiPort);
   console.log('');
 }
 
