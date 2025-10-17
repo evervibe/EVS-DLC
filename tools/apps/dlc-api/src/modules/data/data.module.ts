@@ -6,7 +6,6 @@ import { TItemModule } from './t_item/t_item.module';
 import { TStringModule } from './t_string/t_string.module';
 import { TSkillModule } from './t_skill/t_skill.module';
 import { TSkilllevelModule } from './t_skilllevel/t_skilllevel.module';
-import { TCharacterModule } from './t_character/t_character.module';
 
 @Module({
   imports: [
@@ -24,7 +23,6 @@ import { TCharacterModule } from './t_character/t_character.module';
     TStringModule,
     TSkillModule,
     TSkilllevelModule,
-    TCharacterModule,
   ],
   controllers: [DataController],
   providers: [DataService],

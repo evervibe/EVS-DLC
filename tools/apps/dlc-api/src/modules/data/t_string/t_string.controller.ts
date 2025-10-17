@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { TStringService } from './t_string.service';
 import { TStringEntity } from './t_string.entity';
 
@@ -7,8 +7,16 @@ export class TStringController {
   constructor(private readonly service: TStringService) {}
 
   @Get()
-  async findAll(): Promise<TStringEntity[]> {
-    return this.service.findAll();
+  async findAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<TStringEntity[]> {
+    const limitNum = limit ? parseInt(limit, 10) : undefined;
+    const offsetNum = offset ? parseInt(offset, 10) : undefined;
+    return this.service.findAll(
+      limitNum && !isNaN(limitNum) ? limitNum : undefined,
+      offsetNum && !isNaN(offsetNum) ? offsetNum : undefined,
+    );
   }
 
   @Get(':id')

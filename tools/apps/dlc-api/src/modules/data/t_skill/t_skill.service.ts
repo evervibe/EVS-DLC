@@ -10,12 +10,15 @@ export class TSkillService {
     private readonly repository: Repository<TSkillEntity>,
   ) {}
 
-  async findAll(): Promise<TSkillEntity[]> {
-    return this.repository.find();
+  async findAll(limit?: number, offset?: number): Promise<TSkillEntity[]> {
+    return this.repository.find({
+      take: limit,
+      skip: offset,
+    });
   }
 
   async findOne(id: number): Promise<TSkillEntity | null> {
-    return this.repository.findOne({ where: { id } as any });
+    return this.repository.findOne({ where: { a_index: id } as any });
   }
 
   async create(data: Partial<TSkillEntity>): Promise<TSkillEntity> {
@@ -24,11 +27,11 @@ export class TSkillService {
   }
 
   async update(id: number, data: Partial<TSkillEntity>): Promise<TSkillEntity | null> {
-    await this.repository.update(id, data as any);
+    await this.repository.update({ a_index: id } as any, data as any);
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
-    await this.repository.delete(id);
+    await this.repository.delete({ a_index: id } as any);
   }
 }

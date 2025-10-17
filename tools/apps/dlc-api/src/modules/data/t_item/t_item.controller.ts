@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { TItemService } from './t_item.service';
 import { TItemEntity } from './t_item.entity';
 
@@ -7,8 +7,16 @@ export class TItemController {
   constructor(private readonly service: TItemService) {}
 
   @Get()
-  async findAll(): Promise<TItemEntity[]> {
-    return this.service.findAll();
+  async findAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<TItemEntity[]> {
+    const limitNum = limit ? parseInt(limit, 10) : undefined;
+    const offsetNum = offset ? parseInt(offset, 10) : undefined;
+    return this.service.findAll(
+      limitNum && !isNaN(limitNum) ? limitNum : undefined,
+      offsetNum && !isNaN(offsetNum) ? offsetNum : undefined,
+    );
   }
 
   @Get(':id')

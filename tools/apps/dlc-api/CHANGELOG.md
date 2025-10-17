@@ -5,6 +5,72 @@ All notable changes to the DLC API project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-10-17 - Real Database Alignment & Schema Correction
+
+### Fixed
+- Corrected all entity definitions to match actual MySQL schema exactly
+- Fixed primary key mappings (from `id` to `a_index`)
+- Fixed column names and types to match database 1:1
+
+### Removed
+- **t_character table** - Removed fictional/non-existent table and its entire module
+  - Deleted entity, service, controller, and module files
+  - Removed from data.module.ts imports
+
+### Changed
+- **t_string entity**: Completely rewritten with 27 columns (1 key + 26 language fields)
+  - Replaced fictional schema (id, key, value, language)
+  - Added all real language columns: usa, ger, spn, frc, rus, twn, chn, thai, jpn, mal, brz, hk, pld, tur, ita, mex, nld, uk, dev, etc.
+  - Primary key changed to `a_index` (int)
+  
+- **t_item entity**: Completely rewritten with 170+ columns
+  - Replaced fictional schema (6 columns)
+  - Added all localized names (24 languages)
+  - Added all localized descriptions (24 languages)
+  - Added complete item attributes (stats, requirements, rare system, set bonuses, visuals, metadata)
+  - Primary key `a_index` with auto-increment
+  
+- **t_skill entity**: Completely rewritten with 160+ columns
+  - Replaced fictional schema (5 columns)
+  - Added all localized names (26 languages)
+  - Added all client display data (descriptions, tooltips in 26 languages)
+  - Added complete skill mechanics (requirements, timing, combat data, effects)
+  - Primary key `a_index` (non-auto-increment)
+  
+- **t_skilllevel entity**: Completely rewritten with 46 columns
+  - Replaced fictional schema (5 columns)
+  - Added resource costs (HP, MP, GP, duration)
+  - Added learning requirements (level, SP, stats, items)
+  - Added magic effects and prerequisites
+  - Primary key `a_index`
+
+- **All services**: Updated to use correct primary key (`a_index`) and support pagination
+
+### Added
+- **Migration 002**: Complete schema dump SQL file (`migrations/002_real_schema_dump.sql`)
+  - CREATE TABLE statements for all 4 real tables
+  - Exact column definitions matching MySQL
+  - Primary keys, defaults, and constraints
+  
+- **Documentation**:
+  - `docs/DATA_SCHEMA_OVERVIEW.md` - Complete schema reference with all columns documented
+  - `docs/API_DATA_ENDPOINTS.md` - Full API documentation with examples
+  - `docs/IMPLEMENTATION_SUMMARY_v0.3.1.md` - Detailed change summary and technical notes
+
+### Technical Details
+- Entity column counts: t_string (27), t_item (170+), t_skill (160+), t_skilllevel (46)
+- All type mappings corrected (int, tinyint, smallint, bigint, float, varchar)
+- Default values properly applied (0, -1, empty string)
+- Unsigned types correctly marked
+- Nullable fields only where specified in actual schema
+- Build verification: 0 TypeScript errors
+
+### Breaking Changes
+- Primary key field name changed from `id` to `a_index` in all entities
+- All column names now use real database names (with `a_` prefix)
+- Removed t_character endpoints entirely
+- Response structures updated to reflect real schema
+
 ## [0.3.0] - 2025-10-17 - Full Database Integration
 
 ### Added
