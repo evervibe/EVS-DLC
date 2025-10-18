@@ -1,4 +1,4 @@
-import { FormModal } from '@/tools/ui/components/FormModal';
+import { FormModal } from '@/components/ui/FormModal';
 
 interface DeleteConfirmProps {
   isOpen: boolean;
@@ -13,14 +13,14 @@ export function DeleteConfirm({ isOpen, onClose, onConfirm, name, isLoading }: D
     <FormModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Delete Item"
+      title="Purge Artifact"
       onSubmit={onConfirm}
-      submitLabel="Delete"
+      submitLabel="Confirm purge"
       isSubmitting={isLoading}
     >
-      <p className="text-sm text-gray-600">
-        Are you sure you want to delete <span className="font-semibold">{name || 'this item'}</span>? This action
-        cannot be undone.
+      <p className="text-sm text-rose-200">
+        Are you sure you want to purge <span className="font-semibold text-rose-100">{name || 'this item'}</span>? This
+        action cannot be undone.
       </p>
     </FormModal>
   );

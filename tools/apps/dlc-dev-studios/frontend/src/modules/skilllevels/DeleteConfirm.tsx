@@ -1,4 +1,4 @@
-import { FormModal } from '@/tools/ui/components/FormModal';
+import { FormModal } from '@/components/ui/FormModal';
 
 interface DeleteConfirmProps {
   isOpen: boolean;
@@ -13,13 +13,14 @@ export function DeleteConfirm({ isOpen, onClose, onConfirm, name, isLoading }: D
     <FormModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Delete Skill Level"
+      title="Purge Level"
       onSubmit={onConfirm}
-      submitLabel="Delete"
+      submitLabel="Confirm purge"
       isSubmitting={isLoading}
     >
-      <p className="text-sm text-gray-600">
-        Remove skill level <span className="font-semibold">{name || 'entry'}</span>? Progression data will be lost.
+      <p className="text-sm text-rose-200">
+        Are you sure you want to purge level{' '}
+        <span className="font-semibold text-rose-100">{name || 'selection'}</span>?
       </p>
     </FormModal>
   );

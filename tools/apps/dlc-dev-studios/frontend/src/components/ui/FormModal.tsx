@@ -26,12 +26,12 @@ export function FormModal({
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    
+
     if (isOpen) {
       document.addEventListener('keydown', handleEsc);
       document.body.style.overflow = 'hidden';
     }
-    
+
     return () => {
       document.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'unset';
@@ -42,46 +42,30 @@ export function FormModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
-      
-      {/* Modal */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur" onClick={onClose} />
       <div
         className={cn(
-          'relative z-10 w-full max-w-md rounded-lg bg-white shadow-xl',
-          'max-h-[90vh] overflow-y-auto'
+          'glass-panel relative z-10 w-full max-w-xl overflow-hidden border-gold/20 p-0 text-gray-100',
+          'shadow-gold-glow',
         )}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b p-4">
-          <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="flex items-center justify-between border-b border-gold/20 bg-charcoal/80 px-6 py-4">
+          <div className="font-display text-lg uppercase tracking-[0.3em] text-gold">{title}</div>
           <button
             onClick={onClose}
-            className="rounded p-1 hover:bg-gray-100"
+            className="rounded-full border border-gold/30 p-1 text-gold/80 transition hover:text-gold"
             type="button"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
-
-        {/* Content */}
-        <div className="p-4">{children}</div>
-
-        {/* Footer */}
-        <div className="flex justify-end gap-3 border-t p-4">
-          <Button variant="ghost" onClick={onClose} type="button">
+        <div className="max-h-[70vh] overflow-y-auto px-6 py-5">{children}</div>
+        <div className="flex justify-end gap-3 border-t border-gold/10 bg-charcoal/70 px-6 py-4">
+          <Button variant="ghost" size="sm" onClick={onClose} type="button">
             Cancel
           </Button>
-          <Button
-            variant="primary"
-            onClick={onSubmit}
-            disabled={isSubmitting}
-            type="button"
-          >
-            {isSubmitting ? 'Saving...' : submitLabel}
+          <Button variant="primary" size="sm" onClick={onSubmit} disabled={isSubmitting} type="button">
+            {isSubmitting ? 'Saving…' : submitLabel}
           </Button>
         </div>
       </div>

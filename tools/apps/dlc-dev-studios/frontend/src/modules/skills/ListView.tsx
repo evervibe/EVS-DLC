@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Plus, PencilLine, Pencil, Check, XCircle, Trash2, Search } from 'lucide-react';
-import { Button } from '@/tools/ui/components/Button';
-import { TableView } from '@/tools/ui/components/TableView';
+import { Button } from '@/components/ui/Button';
+import { TableView } from '@/components/ui/TableView';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/components/feedback/ToastContext';
 import { HealthStatusBadge } from '../shared/HealthStatusBadge';
@@ -124,7 +124,7 @@ export function SkillsListView() {
       render: (skill: SkillRow) =>
         inlineEditId === skill.a_index ? (
           <input
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full input-field"
             {...inlineForm.register('a_name', { required: true })}
           />
         ) : (
@@ -138,7 +138,7 @@ export function SkillsListView() {
         inlineEditId === skill.a_index ? (
           <input
             type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full input-field"
             {...inlineForm.register('a_job', { valueAsNumber: true })}
           />
         ) : (
@@ -152,7 +152,7 @@ export function SkillsListView() {
         inlineEditId === skill.a_index ? (
           <input
             type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full input-field"
             {...inlineForm.register('a_type', { valueAsNumber: true })}
           />
         ) : (
@@ -166,7 +166,7 @@ export function SkillsListView() {
         inlineEditId === skill.a_index ? (
           <input
             type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full input-field"
             {...inlineForm.register('a_maxLevel', { valueAsNumber: true })}
           />
         ) : (
@@ -180,7 +180,7 @@ export function SkillsListView() {
         inlineEditId === skill.a_index ? (
           <input
             type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full input-field"
             {...inlineForm.register('a_targetType', { valueAsNumber: true })}
           />
         ) : (
@@ -198,7 +198,7 @@ export function SkillsListView() {
                 <Check className="h-4 w-4" />
               </Button>
               <Button size="sm" variant="ghost" onClick={cancelInlineEdit}>
-                <XCircle className="h-4 w-4 text-gray-500" />
+                <XCircle className="h-4 w-4 text-rose-300" />
               </Button>
             </>
           ) : (
@@ -208,10 +208,10 @@ export function SkillsListView() {
           )}
           <Button size="sm" variant="ghost" onClick={() => setModalSkill(skill)}>
             <span className="sr-only">Edit details</span>
-            <Pencil className="h-4 w-4 text-indigo-600" />
+            <Pencil className="h-4 w-4 text-gold" />
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setDeleteSkill(skill)}>
-            <Trash2 className="h-4 w-4 text-red-600" />
+            <Trash2 className="h-4 w-4 text-rose-400" />
           </Button>
         </div>
       ),
@@ -219,46 +219,46 @@ export function SkillsListView() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Skills</h1>
-          <p className="text-gray-600">Manage skill definitions (t_skill)</p>
+    <div className="space-y-10">
+      <header className="flex flex-wrap items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="font-display text-2xl uppercase tracking-[0.4em] text-gold">Skill Codex</h1>
+          <p className="text-xs uppercase tracking-[0.3em] text-gray-400">Manage skill definitions (t_skill)</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <HealthStatusBadge />
-          <Button onClick={() => setIsCreateOpen(true)} disabled={isApiUnavailable}>
-            <Plus className="mr-2 h-4 w-4" /> Create Skill
+          <Button onClick={() => setIsCreateOpen(true)} disabled={isApiUnavailable} className="gap-2">
+            <Plus className="h-4 w-4" /> Add Skill
           </Button>
         </div>
-      </div>
+      </header>
 
       {isApiUnavailable ? (
         <ApiOfflineNotice onRetry={() => listQuery.refetch()} />
       ) : (
-        <>
+        <div className="space-y-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="relative w-full max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" />
               <input
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-3"
+                className="w-full rounded-full border border-gold/30 bg-charcoal/70 py-2 pl-10 pr-4 text-sm text-gray-100 placeholder:text-gray-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
                 placeholder="Search skills..."
               />
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <span>Page size:</span>
+            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-gray-400">
+              <span>Results per page</span>
               <select
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
                   setPage(1);
                 }}
-                className="rounded border border-gray-300 px-2 py-1"
+                className="rounded-full border border-gold/30 bg-charcoal/70 px-4 py-2 text-sm text-gray-100 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
               >
                 {PAGE_SIZE_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -274,30 +274,34 @@ export function SkillsListView() {
             data={rows}
             isLoading={listQuery.isLoading}
             error={listQuery.error instanceof Error ? listQuery.error.message : null}
-            emptyMessage={search ? 'No skills match your search.' : 'No skills found.'}
+            emptyMessage={search ? 'No skills match your search.' : 'No skills recorded yet.'}
           />
 
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="text-sm text-gray-600">
-              Showing {rangeStart} - {rangeEnd} of {total} skills
+          <div className="flex flex-wrap items-center justify-between gap-4 text-xs uppercase tracking-[0.3em] text-gray-400">
+            <p>
+              Showing {rangeStart} – {rangeEnd} of {total} skills
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" disabled={page === 1} onClick={() => setPage((prev) => Math.max(1, prev - 1))}>
+              <Button
+                variant="ghost"
+                disabled={page === 1}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                size="sm"
+              >
                 Previous
               </Button>
-              <span className="text-sm text-gray-600">
-                Page {page} of {totalPages}
-              </span>
+              <span className="text-gray-300">Page {page} of {totalPages}</span>
               <Button
                 variant="ghost"
                 disabled={page === totalPages}
                 onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                size="sm"
               >
                 Next
               </Button>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       <EditModal

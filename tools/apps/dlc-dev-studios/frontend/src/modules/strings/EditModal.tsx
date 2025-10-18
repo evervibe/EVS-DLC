@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormModal } from '@/tools/ui/components/FormModal';
+import { FormModal } from '@/components/ui/FormModal';
 import { CreateTStringDto } from './types';
 
 interface EditModalProps {
@@ -22,7 +22,7 @@ export function EditModal({ isOpen, onClose, onSubmit, defaultValues, mode, isSu
 
   useEffect(() => {
     if (isOpen) {
-      reset(defaultValues ?? { a_index: undefined });
+      reset(defaultValues ?? {});
     }
   }, [isOpen, defaultValues, reset]);
 
@@ -30,61 +30,36 @@ export function EditModal({ isOpen, onClose, onSubmit, defaultValues, mode, isSu
     <FormModal
       isOpen={isOpen}
       onClose={onClose}
-      title={mode === 'create' ? 'Create String' : 'Edit String'}
+      title={mode === 'create' ? 'Forge String' : 'Refine String'}
       onSubmit={handleSubmit(onSubmit)}
-      submitLabel={mode === 'create' ? 'Create' : 'Save changes'}
+      submitLabel={mode === 'create' ? 'Forge' : 'Commit changes'}
       isSubmitting={isSubmitting}
     >
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">String ID</label>
-          <input
-            type="number"
-            {...register('a_index', { valueAsNumber: true, required: 'String ID is required' })}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-            placeholder="Unique identifier"
-            disabled={mode === 'edit'}
-          />
-          {errors.a_index && <p className="mt-1 text-sm text-red-600">{errors.a_index.message}</p>}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Default Text</label>
+          <label className="label-field">Default String</label>
           <textarea
-            {...register('a_string', { required: 'Default text is required' })}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
             rows={3}
-            placeholder="Primary string"
+            {...register('a_string', { required: 'String content required' })}
+            className="mt-2 w-full input-field"
+            placeholder="Base localization"
           />
-          {errors.a_string && <p className="mt-1 text-sm text-red-600">{errors.a_string.message}</p>}
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">English (USA)</label>
-            <textarea
-              {...register('a_string_usa')}
-              className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-              rows={2}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">German</label>
-            <textarea
-              {...register('a_string_ger')}
-              className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-              rows={2}
-            />
-          </div>
+          {errors.a_string && <p className="form-hint mt-2">{errors.a_string.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Traditional Chinese</label>
-          <textarea
-            {...register('a_string_twn')}
-            className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-            rows={2}
-          />
+          <label className="label-field">English</label>
+          <textarea rows={3} {...register('a_string_usa')} className="mt-2 w-full input-field" placeholder="EN" />
+        </div>
+
+        <div>
+          <label className="label-field">German</label>
+          <textarea rows={3} {...register('a_string_ger')} className="mt-2 w-full input-field" placeholder="DE" />
+        </div>
+
+        <div>
+          <label className="label-field">Traditional Chinese</label>
+          <textarea rows={3} {...register('a_string_twn')} className="mt-2 w-full input-field" placeholder="ZH-TW" />
         </div>
       </div>
     </FormModal>

@@ -6,6 +6,8 @@ interface Column<T> {
   key: keyof T | 'actions';
   label: string;
   render?: (item: T) => ReactNode;
+  alignment?: 'left' | 'center' | 'right';
+  width?: string;
 }
 
 interface TableViewProps<T> {
@@ -24,7 +26,7 @@ export function TableView<T extends { id: number | string }>({
   emptyMessage = 'No data available',
 }: TableViewProps<T>) {
   if (isLoading) {
-    return <Loader />;
+    return <Loader label="Summoning entries" />;
   }
 
   if (error) {
@@ -33,32 +35,43 @@ export function TableView<T extends { id: number | string }>({
 
   if (!data || data.length === 0) {
     return (
-      <div className="rounded-lg border bg-gray-50 p-8 text-center text-gray-500">
+      <div className="glass-panel border-gold/10 p-10 text-center text-sm text-gray-400">
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border">
-      <table className="w-full">
-        <thead className="border-b bg-gray-50">
+    <div className="overflow-hidden rounded-xl border border-gold/10 shadow-inner-ring">
+      <table className="w-full min-w-[720px] border-separate border-spacing-0">
+        <thead className="bg-charcoal/60 text-xs uppercase tracking-[0.2em] text-gold/80">
           <tr>
             {columns.map((column) => (
               <th
                 key={String(column.key)}
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700"
+                className="border-b border-gold/10 px-6 py-3 text-left"
+                style={{ textAlign: column.alignment ?? 'left', width: column.width }}
               >
                 {column.label}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y bg-white">
-          {data.map((item) => (
-            <tr key={item.id} className="hover:bg-gray-50">
-              {columns.map((column) => (
-                <td key={String(column.key)} className="px-6 py-4 text-sm text-gray-900">
+        <tbody>
+          {data.map((item, itemIndex) => (
+            <tr
+              key={item.id}
+              className="bg-charcoal/40 text-sm text-gray-200 transition hover:bg-charcoal/70"
+            >
+              {columns.map((column, columnIndex) => (
+                <td
+                  key={String(column.key)}
+                  className="border-b border-gold/5 px-6 py-4"
+                  style={{
+                    textAlign: column.alignment ?? 'left',
+                    borderBottomWidth: itemIndex === data.length - 1 ? 0 : undefined,
+                  }}
+                >
                   {column.render
                     ? column.render(item)
                     : column.key !== 'actions'

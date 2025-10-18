@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Plus, PencilLine, Pencil, Check, XCircle, Trash2, Search } from 'lucide-react';
-import { Button } from '@/tools/ui/components/Button';
-import { TableView } from '@/tools/ui/components/TableView';
+import { Button } from '@/components/ui/Button';
+import { TableView } from '@/components/ui/TableView';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/components/feedback/ToastContext';
 import { HealthStatusBadge } from '../shared/HealthStatusBadge';
@@ -130,94 +130,84 @@ export function SkillLevelsListView() {
     id: level.a_index,
   }));
 
+  const isEditingRow = (row: SkillLevelRow) => inlineEditId === row.a_index;
+
   const columns = [
     { key: 'a_index' as const, label: 'ID' },
     {
       key: 'skill' as const,
       label: 'Skill',
-      render: (level: SkillLevelRow) => level.skill?.a_name || level.skill?.a_index || '—',
+      render: (row: SkillLevelRow) => row.skill?.a_name || row.skill?.a_index || '—',
     },
     {
       key: 'a_level' as const,
       label: 'Level',
-      render: (level: SkillLevelRow) =>
-        inlineEditId === level.a_index ? (
-          <input
-            type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
-            {...inlineForm.register('a_level', { valueAsNumber: true })}
-          />
+      render: (row: SkillLevelRow) =>
+        isEditingRow(row) ? (
+          <input type="number" className="w-full input-field" {...inlineForm.register('a_level', { valueAsNumber: true })} />
         ) : (
-          level.a_level
+          row.a_level
         ),
     },
     {
       key: 'a_needHP' as const,
       label: 'HP',
-      render: (level: SkillLevelRow) =>
-        inlineEditId === level.a_index ? (
-          <input
-            type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
-            {...inlineForm.register('a_needHP', { valueAsNumber: true })}
-          />
+      render: (row: SkillLevelRow) =>
+        isEditingRow(row) ? (
+          <input type="number" className="w-full input-field" {...inlineForm.register('a_needHP', { valueAsNumber: true })} />
         ) : (
-          level.a_needHP
+          row.a_needHP
         ),
     },
     {
       key: 'a_needMP' as const,
       label: 'MP',
-      render: (level: SkillLevelRow) =>
-        inlineEditId === level.a_index ? (
-          <input
-            type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
-            {...inlineForm.register('a_needMP', { valueAsNumber: true })}
-          />
+      render: (row: SkillLevelRow) =>
+        isEditingRow(row) ? (
+          <input type="number" className="w-full input-field" {...inlineForm.register('a_needMP', { valueAsNumber: true })} />
         ) : (
-          level.a_needMP
+          row.a_needMP
         ),
     },
     {
       key: 'a_learnLevel' as const,
       label: 'Learn Level',
-      render: (level: SkillLevelRow) =>
-        inlineEditId === level.a_index ? (
+      render: (row: SkillLevelRow) =>
+        isEditingRow(row) ? (
           <input
             type="number"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-full input-field"
             {...inlineForm.register('a_learnLevel', { valueAsNumber: true })}
           />
         ) : (
-          level.a_learnLevel
+          row.a_learnLevel
         ),
     },
     {
       key: 'actions' as const,
       label: 'Actions',
-      render: (level: SkillLevelRow) => (
+      render: (row: SkillLevelRow) => (
         <div className="flex items-center gap-2">
-          {inlineEditId === level.a_index ? (
+          {isEditingRow(row) ? (
             <>
-              <Button size="sm" variant="primary" onClick={submitInlineEdit}>
+              <Button size="sm" variant="primary" onClick={submitInlineEdit} disabled={updateMutation.isPending}>
                 <Check className="h-4 w-4" />
               </Button>
               <Button size="sm" variant="ghost" onClick={cancelInlineEdit}>
-                <XCircle className="h-4 w-4 text-gray-500" />
+                <XCircle className="h-4 w-4 text-rose-300" />
               </Button>
             </>
           ) : (
-            <Button size="sm" variant="ghost" onClick={() => handleInlineEdit(level)}>
+            <Button size="sm" variant="ghost" onClick={() => handleInlineEdit(row)}>
               <PencilLine className="h-4 w-4" />
             </Button>
           )}
-          <Button size="sm" variant="ghost" onClick={() => setModalLevel(level)}>
+          <Button size="sm" variant="ghost" onClick={() => setModalLevel(row)}>
             <span className="sr-only">Edit details</span>
-            <Pencil className="h-4 w-4 text-indigo-600" />
+            <Pencil className="h-4 w-4 text-gold" />
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => setDeleteLevel(level)}>
-            <Trash2 className="h-4 w-4 text-red-600" />
+          <Button size="sm" variant="ghost" onClick={() => setDeleteLevel(row)}>
+            <Trash2 className="h-4 w-4 text-rose-400" />
           </Button>
         </div>
       ),
@@ -225,61 +215,61 @@ export function SkillLevelsListView() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Skill Levels</h1>
-          <p className="text-gray-600">Manage level tuning for skills (t_skilllevel)</p>
+    <div className="space-y-10">
+      <header className="flex flex-wrap items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="font-display text-2xl uppercase tracking-[0.4em] text-gold">Skill Ascension</h1>
+          <p className="text-xs uppercase tracking-[0.3em] text-gray-400">Manage level tuning for skills (t_skilllevel)</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <HealthStatusBadge />
-          <Button onClick={() => setIsCreateOpen(true)} disabled={isApiUnavailable}>
-            <Plus className="mr-2 h-4 w-4" /> Create Skill Level
+          <Button onClick={() => setIsCreateOpen(true)} disabled={isApiUnavailable} className="gap-2">
+            <Plus className="h-4 w-4" /> Add Level
           </Button>
         </div>
-      </div>
+      </header>
 
       {isApiUnavailable ? (
         <ApiOfflineNotice onRetry={() => listQuery.refetch()} />
       ) : (
-        <>
+        <div className="space-y-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-gray-400">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" />
                 <input
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
-                  className="w-48 rounded-lg border border-gray-300 py-2 pl-10 pr-3"
+                  className="w-48 rounded-full border border-gold/30 bg-charcoal/70 py-2 pl-10 pr-4 text-sm text-gray-100 placeholder:text-gray-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
                   placeholder="Search levels..."
                 />
               </div>
-              <div>
-                <label className="mr-2 text-sm text-gray-600">Skill ID</label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/40" />
                 <input
                   value={skillFilter}
                   onChange={(e) => {
                     setSkillFilter(e.target.value);
                     setPage(1);
                   }}
-                  className="w-28 rounded border border-gray-300 px-2 py-2"
-                  inputMode="numeric"
-                  placeholder="Any"
+                  className="w-40 rounded-full border border-gold/20 bg-charcoal/70 py-2 pl-10 pr-4 text-sm text-gray-100 placeholder:text-gray-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  placeholder="Filter by skill ID"
                 />
               </div>
+              <span>Total: {total}</span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <span>Page size:</span>
+            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-gray-400">
+              <span>Results per page</span>
               <select
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
                   setPage(1);
                 }}
-                className="rounded border border-gray-300 px-2 py-1"
+                className="rounded-full border border-gold/30 bg-charcoal/70 px-4 py-2 text-sm text-gray-100 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
               >
                 {PAGE_SIZE_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -295,30 +285,34 @@ export function SkillLevelsListView() {
             data={rows}
             isLoading={listQuery.isLoading}
             error={listQuery.error instanceof Error ? listQuery.error.message : null}
-            emptyMessage={search ? 'No skill levels match your search.' : 'No skill levels found.'}
+            emptyMessage={search ? 'No skill levels match your search.' : 'No skill levels found yet.'}
           />
 
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="text-sm text-gray-600">
-              Showing {rangeStart} - {rangeEnd} of {total} levels
+          <div className="flex flex-wrap items-center justify-between gap-4 text-xs uppercase tracking-[0.3em] text-gray-400">
+            <p>
+              Showing {rangeStart} – {rangeEnd} of {total}
             </p>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" disabled={page === 1} onClick={() => setPage((prev) => Math.max(1, prev - 1))}>
+              <Button
+                variant="ghost"
+                disabled={page === 1}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                size="sm"
+              >
                 Previous
               </Button>
-              <span className="text-sm text-gray-600">
-                Page {page} of {totalPages}
-              </span>
+              <span className="text-gray-300">Page {page} of {totalPages}</span>
               <Button
                 variant="ghost"
                 disabled={page === totalPages}
                 onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                size="sm"
               >
                 Next
               </Button>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       <EditModal
@@ -342,7 +336,7 @@ export function SkillLevelsListView() {
         isOpen={!!deleteLevel}
         onClose={() => setDeleteLevel(null)}
         onConfirm={handleDelete}
-        name={deleteLevel?.skill?.a_name ?? String(deleteLevel?.a_index || '')}
+        name={deleteLevel?.skill?.a_name}
         isLoading={deleteMutation.isPending}
       />
     </div>

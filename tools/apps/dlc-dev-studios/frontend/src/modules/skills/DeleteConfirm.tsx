@@ -1,4 +1,4 @@
-import { FormModal } from '@/tools/ui/components/FormModal';
+import { FormModal } from '@/components/ui/FormModal';
 
 interface DeleteConfirmProps {
   isOpen: boolean;
@@ -13,14 +13,14 @@ export function DeleteConfirm({ isOpen, onClose, onConfirm, name, isLoading }: D
     <FormModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Delete Skill"
+      title="Purge Skill"
       onSubmit={onConfirm}
-      submitLabel="Delete"
+      submitLabel="Confirm purge"
       isSubmitting={isLoading}
     >
-      <p className="text-sm text-gray-600">
-        Do you really want to delete <span className="font-semibold">{name || 'this skill'}</span>? This action is
-        irreversible.
+      <p className="text-sm text-rose-200">
+        This will permanently erase <span className="font-semibold text-rose-100">{name || 'this skill'}</span> from the
+        codex.
       </p>
     </FormModal>
   );
