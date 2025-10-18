@@ -38,7 +38,7 @@ export class GameService {
     this.logger.log('Fetching skills via game alias');
     
     try {
-      const result = await this.skillService.findAll({ limit: 1000 });
+      const result = await this.skillService.findAll({});
       return result.data;
     } catch (error) {
       this.logger.error('Error fetching skills', error instanceof Error ? error.stack : undefined);
@@ -50,7 +50,7 @@ export class GameService {
     this.logger.log('Fetching skill levels via game alias');
     
     try {
-      const result = await this.skilllevelService.findAll({ limit: 1000 });
+      const result = await this.skilllevelService.findAll({});
       return result.data;
     } catch (error) {
       this.logger.error('Error fetching skill levels', error instanceof Error ? error.stack : undefined);
@@ -62,7 +62,7 @@ export class GameService {
     this.logger.log('Fetching strings via game alias');
     
     try {
-      const result = await this.stringService.findAll({ limit: 1000 });
+      const result = await this.stringService.findAll({});
       return result.data;
     } catch (error) {
       this.logger.error('Error fetching strings', error instanceof Error ? error.stack : undefined);

@@ -12,12 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Frontend list pages now use canonical `/data/*` endpoints instead of `/game/*` aliases
 - Shared library Endpoints structure updated to match canonical format with separate `counts` and `list` objects
 - Dashboard properly handles wrapped response formats from API
+- Removed hardcoded `limit: 1000` from game service alias methods (now uses service defaults)
 
 ### Changed
 - Converted dashboard from client-side to server-side component
 - Added `revalidate = 0` and `dynamic = 'force-dynamic'` to dashboard page
 - Created dedicated `getCounts` data loader for dashboard metrics
 - Updated all frontend fetch functions to handle both wrapped and direct response formats
+- Game service alias methods now pass empty query objects, allowing services to use their default limits
 
 ## [1.3.1] - 2025-10-18
 

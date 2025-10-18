@@ -14,7 +14,37 @@ Successfully implemented the v1.3.2 patch to eliminate dashboard ≠ list data d
 
 ## Changes Implemented
 
-### 1. Shared Library: Canonical Endpoints Structure
+### 1. Backend: Removed Hardcoded List Limits
+
+**Files Modified:**
+- `tools/apps/dlc-api/src/modules/game/game.service.ts`
+
+**Implementation:**
+Removed hardcoded `limit: 1000` from game service alias methods:
+
+**Before:**
+```typescript
+async getSkills(): Promise<any[]> {
+  const result = await this.skillService.findAll({ limit: 1000 });
+  return result.data;
+}
+```
+
+**After:**
+```typescript
+async getSkills(): Promise<any[]> {
+  const result = await this.skillService.findAll({});
+  return result.data;
+}
+```
+
+**Benefits:**
+- Services now use their default limits (50) which is more reasonable
+- No silent truncation of large datasets
+- Consistent with the principle of not imposing arbitrary limits
+- Clients can specify their own limits via query parameters
+
+### 2. Shared Library: Canonical Endpoints Structure
 
 **Files Modified:**
 - `tools/shared/lib/api.ts`
@@ -44,7 +74,7 @@ export const Endpoints = {
 - Consistent naming convention across frontend and backend
 - Type-safe endpoint references with `as const`
 
-### 2. Dashboard: Server-Side Rendering with No-Store Cache
+### 3. Dashboard: Server-Side Rendering with No-Store Cache
 
 **Files Modified:**
 - `tools/apps/dlc-web-admin/app/dashboard/page.tsx`
@@ -91,7 +121,7 @@ async function get(url: string) {
 - Simpler component - no loading states or error handling UI needed
 - Proper handling of both wrapped (`{ success, data }`) and direct response formats
 
-### 3. Frontend: Canonical Endpoint Alignment
+### 4. Frontend: Canonical Endpoint Alignment
 
 **Files Modified:**
 - `tools/apps/dlc-web-admin/app/items/page.tsx`
@@ -128,7 +158,7 @@ return [];
 - Proper handling of API response format variations
 - `/game/*` aliases remain available for backward compatibility
 
-### 4. React Keys Verification
+### 5. React Keys Verification
 
 **Status:** ✓ Already Correct
 
@@ -140,7 +170,7 @@ All list pages already use stable React keys:
 
 No changes were required.
 
-### 5. Version Updates
+### 6. Version Updates
 
 **Files Modified:**
 - `tools/apps/dlc-api/package.json` → 1.3.2
@@ -248,6 +278,9 @@ All changes are backward compatible:
 
 ## Files Changed Summary
 
+### Backend (API)
+- 1 service file modified (game.service.ts - removed hardcoded limits)
+
 ### Frontend (Web Admin)
 - 1 page file modified (dashboard)
 - 4 list page files modified (items, skills, skilllevels, strings)
@@ -263,8 +296,8 @@ All changes are backward compatible:
 - 1 CHANGELOG.md file modified
 - 1 IMPLEMENTATION_REPORT.md file updated (this file)
 
-**Total Files Changed:** 12  
-**Total Lines Changed:** ~175 insertions, ~116 deletions
+**Total Files Changed:** 13  
+**Total Lines Changed:** ~200 insertions, ~120 deletions
 
 ---
 
