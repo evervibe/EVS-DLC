@@ -101,25 +101,29 @@ export default function StringsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredStrings.map((str: any, idx: number) => (
-                      <tr
-                        key={idx}
-                        className="border-b border-gray-800 text-sm hover:bg-gray-800/50 transition-colors"
-                      >
-                        <td className="py-3 pr-4 text-gray-300">{str.a_index || idx}</td>
-                        <td className="py-3 pr-4 text-gray-100 font-mono text-xs">
-                          {str.a_string_id || '-'}
-                        </td>
-                        <td className="py-3 pr-4 text-gray-300 max-w-md truncate">
-                          {str.a_string || '-'}
-                        </td>
-                        <td className="py-3 pr-4">
-                          <span className="inline-flex items-center rounded-full bg-rose-500/20 px-2 py-1 text-xs text-rose-300">
-                            {str.a_language || 'EN'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredStrings.map((str: any) => {
+                      const uniqueKey = str.a_index || str.a_string_id || `${str.a_language}-${str.a_string?.substring(0, 20)}`;
+                      
+                      return (
+                        <tr
+                          key={uniqueKey}
+                          className="border-b border-gray-800 text-sm hover:bg-gray-800/50 transition-colors"
+                        >
+                          <td className="py-3 pr-4 text-gray-300">{str.a_index || '-'}</td>
+                          <td className="py-3 pr-4 text-gray-100 font-mono text-xs">
+                            {str.a_string_id || '-'}
+                          </td>
+                          <td className="py-3 pr-4 text-gray-300 max-w-md truncate">
+                            {str.a_string || '-'}
+                          </td>
+                          <td className="py-3 pr-4">
+                            <span className="inline-flex items-center rounded-full bg-rose-500/20 px-2 py-1 text-xs text-rose-300">
+                              {str.a_language || 'EN'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

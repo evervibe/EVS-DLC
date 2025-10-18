@@ -85,19 +85,24 @@ export default function SkillLevelsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {skillLevels?.map((level: any, idx: number) => (
-                      <tr
-                        key={idx}
-                        className="border-b border-gray-800 text-sm hover:bg-gray-800/50 transition-colors"
-                      >
-                        <td className="py-3 pr-4 text-gray-300">{level.a_index || idx}</td>
-                        <td className="py-3 pr-4 text-gray-100">{level.a_skill_idx || '-'}</td>
-                        <td className="py-3 pr-4 text-emerald-400">{level.a_level || '-'}</td>
-                        <td className="py-3 pr-4 text-gray-300 text-xs">
-                          {JSON.stringify(level).substring(0, 50)}...
-                        </td>
-                      </tr>
-                    ))}
+                    {skillLevels?.map((level: any) => {
+                      const uniqueKey = level.a_index || `${level.a_skill_idx}-${level.a_level}`;
+                      const previewText = level.a_descr || level.a_name || Object.keys(level).slice(0, 3).join(', ');
+                      
+                      return (
+                        <tr
+                          key={uniqueKey}
+                          className="border-b border-gray-800 text-sm hover:bg-gray-800/50 transition-colors"
+                        >
+                          <td className="py-3 pr-4 text-gray-300">{level.a_index || '-'}</td>
+                          <td className="py-3 pr-4 text-gray-100">{level.a_skill_idx || '-'}</td>
+                          <td className="py-3 pr-4 text-emerald-400">{level.a_level || '-'}</td>
+                          <td className="py-3 pr-4 text-gray-300 text-xs">
+                            {previewText.substring(0, 50)}{previewText.length > 50 ? '...' : ''}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
