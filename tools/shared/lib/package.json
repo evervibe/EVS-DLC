@@ -1,0 +1,16 @@
+{
+  "name": "@evs-dlc/shared-lib",
+  "version": "1.0.0",
+  "description": "Shared libraries for EVS-DLC monorepo",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.12.3"
+}

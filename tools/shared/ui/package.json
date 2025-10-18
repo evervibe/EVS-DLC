@@ -1,0 +1,20 @@
+{
+  "name": "@evs-dlc/shared-ui",
+  "version": "1.0.0",
+  "description": "Shared UI components for EVS-DLC monorepo",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.2",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.12.3"
+}
