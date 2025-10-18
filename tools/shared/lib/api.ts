@@ -3,7 +3,10 @@
  * Provides a centralized API client for all applications
  */
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:30089';
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.API_URL ||
+  'http://localhost:30089';
 
 /**
  * Generic API error class
@@ -85,11 +88,19 @@ export async function getHealthReady() {
  * Canonical Endpoints for data resources
  */
 export const Endpoints = {
-  items: { list: '/data/t_item', count: '/data/t_item/count' },
-  skills: { list: '/data/t_skill', count: '/data/t_skill/count' },
-  skilllevels: { list: '/data/t_skilllevel', count: '/data/t_skilllevel/count' },
-  strings: { list: '/data/t_string', count: '/data/t_string/count' }
-};
+  counts: {
+    items:       `${API_BASE}/data/t_item/count`,
+    skills:      `${API_BASE}/data/t_skill/count`,
+    skilllevels: `${API_BASE}/data/t_skilllevel/count`,
+    strings:     `${API_BASE}/data/t_string/count`,
+  },
+  list: {
+    items:       `${API_BASE}/data/t_item`,
+    skills:      `${API_BASE}/data/t_skill`,
+    skilllevels: `${API_BASE}/data/t_skilllevel`,
+    strings:     `${API_BASE}/data/t_string`,
+  },
+} as const;
 
 /**
  * Generic CRUD Operations
@@ -152,7 +163,7 @@ export const itemsApi = {
   create: (data: any) => create<any>('items', data),
   update: (id: number, data: any) => update<any>('items', id, data),
   delete: (id: number) => remove('items', id),
-  count: () => getCount(Endpoints.items.count),
+  count: () => getCount(Endpoints.counts.items),
 };
 
 // Skills
@@ -162,7 +173,7 @@ export const skillsApi = {
   create: (data: any) => create<any>('skills', data),
   update: (id: number, data: any) => update<any>('skills', id, data),
   delete: (id: number) => remove('skills', id),
-  count: () => getCount(Endpoints.skills.count),
+  count: () => getCount(Endpoints.counts.skills),
 };
 
 // Skill Levels
@@ -172,7 +183,7 @@ export const skillLevelsApi = {
   create: (data: any) => create<any>('skilllevels', data),
   update: (id: number, data: any) => update<any>('skilllevels', id, data),
   delete: (id: number) => remove('skilllevels', id),
-  count: () => getCount(Endpoints.skilllevels.count),
+  count: () => getCount(Endpoints.counts.skilllevels),
 };
 
 // Strings
@@ -182,5 +193,5 @@ export const stringsApi = {
   create: (data: any) => create<any>('strings', data),
   update: (id: number, data: any) => update<any>('strings', id, data),
   delete: (id: number) => remove('strings', id),
-  count: () => getCount(Endpoints.strings.count),
+  count: () => getCount(Endpoints.counts.strings),
 };

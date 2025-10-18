@@ -12,13 +12,22 @@ import Link from 'next/link';
 
 async function fetchItems() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:30089';
-  const response = await fetch(`${baseUrl}/game/items`);
+  const response = await fetch(`${baseUrl}/data/t_item`);
   
   if (!response.ok) {
     throw new Error('Failed to fetch items');
   }
   
-  return response.json();
+  const result = await response.json();
+  // Handle wrapped response format: { success: true, data: [...] }
+  if (result?.success && Array.isArray(result.data)) {
+    return result.data;
+  }
+  // Handle direct array response
+  if (Array.isArray(result)) {
+    return result;
+  }
+  return [];
 }
 
 export default function ItemsPage() {
