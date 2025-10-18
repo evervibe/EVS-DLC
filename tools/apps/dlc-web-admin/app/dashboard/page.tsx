@@ -1,51 +1,16 @@
-'use client';
-
 import { Card } from '@/components/ui/card';
-import { HealthStatusBadge } from '@/components/feedback/health-status-badge';
-import { ApiOfflineNotice } from '@/components/feedback/api-offline-notice';
-import { useQuery } from '@tanstack/react-query';
-import { Loader } from '@/components/ui/loader';
 import { Database, Zap, Package, Globe } from 'lucide-react';
+import { getCounts } from './_data/getCounts';
 
-async function fetchStats() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:30089';
-  
-  const [itemsRes, skillsRes, skillLevelsRes, stringsRes] = await Promise.allSettled([
-    fetch(`${baseUrl}/data/t_item/count`).then(r => r.json()),
-    fetch(`${baseUrl}/data/t_skill/count`).then(r => r.json()),
-    fetch(`${baseUrl}/data/t_skilllevel/count`).then(r => r.json()),
-    fetch(`${baseUrl}/data/t_string/count`).then(r => r.json()),
-  ]);
+// Disable ISR and force dynamic rendering
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
-  const extractCount = (res: any) => {
-    if (res.status !== 'fulfilled') return 0;
-    const val = res.value;
-    // Handle wrapped response format: { success: true, data: { count: X } }
-    if (val?.data?.count !== undefined) return val.data.count;
-    // Handle direct response format: { count: X }
-    if (val?.count !== undefined) return val.count;
-    return 0;
-  };
-
-  return {
-    items: extractCount(itemsRes),
-    skills: extractCount(skillsRes),
-    skillLevels: extractCount(skillLevelsRes),
-    strings: extractCount(stringsRes),
-  };
-}
-
-export default function DashboardPage() {
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: fetchStats,
-    refetchInterval: 60_000,
-  });
+export default async function DashboardPage() {
+  const { items, skills, skilllevels, strings } = await getCounts();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8">
-      <ApiOfflineNotice />
-      
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -56,72 +21,65 @@ export default function DashboardPage() {
               EverVibe Studios DLC Development Interface
             </p>
           </div>
-          <HealthStatusBadge />
         </div>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader size="lg" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card title="Items" accent="gold">
-              <div className="flex items-center gap-4">
-                <div className="rounded-full bg-amber-500/20 p-3">
-                  <Package className="h-8 w-8 text-amber-400" />
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-white">
-                    {stats?.items || 0}
-                  </div>
-                  <div className="text-sm text-gray-400">Total Items</div>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card title="Items" accent="gold">
+            <div className="flex items-center gap-4">
+              <div className="rounded-full bg-amber-500/20 p-3">
+                <Package className="h-8 w-8 text-amber-400" />
               </div>
-            </Card>
+              <div>
+                <div className="text-3xl font-bold text-white">
+                  {items || 0}
+                </div>
+                <div className="text-sm text-gray-400">Total Items</div>
+              </div>
+            </div>
+          </Card>
 
-            <Card title="Skills" accent="accent">
-              <div className="flex items-center gap-4">
-                <div className="rounded-full bg-blue-500/20 p-3">
-                  <Zap className="h-8 w-8 text-blue-400" />
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-white">
-                    {stats?.skills || 0}
-                  </div>
-                  <div className="text-sm text-gray-400">Total Skills</div>
-                </div>
+          <Card title="Skills" accent="accent">
+            <div className="flex items-center gap-4">
+              <div className="rounded-full bg-blue-500/20 p-3">
+                <Zap className="h-8 w-8 text-blue-400" />
               </div>
-            </Card>
+              <div>
+                <div className="text-3xl font-bold text-white">
+                  {skills || 0}
+                </div>
+                <div className="text-sm text-gray-400">Total Skills</div>
+              </div>
+            </div>
+          </Card>
 
-            <Card title="Skill Levels" accent="emerald">
-              <div className="flex items-center gap-4">
-                <div className="rounded-full bg-emerald-500/20 p-3">
-                  <Database className="h-8 w-8 text-emerald-400" />
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-white">
-                    {stats?.skillLevels || 0}
-                  </div>
-                  <div className="text-sm text-gray-400">Skill Levels</div>
-                </div>
+          <Card title="Skill Levels" accent="emerald">
+            <div className="flex items-center gap-4">
+              <div className="rounded-full bg-emerald-500/20 p-3">
+                <Database className="h-8 w-8 text-emerald-400" />
               </div>
-            </Card>
+              <div>
+                <div className="text-3xl font-bold text-white">
+                  {skilllevels || 0}
+                </div>
+                <div className="text-sm text-gray-400">Skill Levels</div>
+              </div>
+            </div>
+          </Card>
 
-            <Card title="Strings" accent="crimson">
-              <div className="flex items-center gap-4">
-                <div className="rounded-full bg-rose-500/20 p-3">
-                  <Globe className="h-8 w-8 text-rose-400" />
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-white">
-                    {stats?.strings || 0}
-                  </div>
-                  <div className="text-sm text-gray-400">Localization Strings</div>
-                </div>
+          <Card title="Strings" accent="crimson">
+            <div className="flex items-center gap-4">
+              <div className="rounded-full bg-rose-500/20 p-3">
+                <Globe className="h-8 w-8 text-rose-400" />
               </div>
-            </Card>
-          </div>
-        )}
+              <div>
+                <div className="text-3xl font-bold text-white">
+                  {strings || 0}
+                </div>
+                <div className="text-sm text-gray-400">Localization Strings</div>
+              </div>
+            </div>
+          </Card>
+        </div>
 
         <div className="mt-8">
           <Card title="Quick Actions" description="Manage your game data">

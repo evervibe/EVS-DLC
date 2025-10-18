@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2025-10-18
+
+### Fixed
+- Dashboard metrics now use server-side rendering with `cache: 'no-store'` for real-time data
+- Frontend list pages now use canonical `/data/*` endpoints instead of `/game/*` aliases
+- Shared library Endpoints structure updated to match canonical format with separate `counts` and `list` objects
+- Dashboard properly handles wrapped response formats from API
+
+### Changed
+- Converted dashboard from client-side to server-side component
+- Added `revalidate = 0` and `dynamic = 'force-dynamic'` to dashboard page
+- Created dedicated `getCounts` data loader for dashboard metrics
+- Updated all frontend fetch functions to handle both wrapped and direct response formats
+
 ## [1.3.1] - 2025-10-18
 
 ### Added

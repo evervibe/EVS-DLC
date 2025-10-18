@@ -12,13 +12,22 @@ import Link from 'next/link';
 
 async function fetchSkillLevels() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:30089';
-  const response = await fetch(`${baseUrl}/game/skilllevels`);
+  const response = await fetch(`${baseUrl}/data/t_skilllevel`);
   
   if (!response.ok) {
     throw new Error('Failed to fetch skill levels');
   }
   
-  return response.json();
+  const result = await response.json();
+  // Handle wrapped response format: { success: true, data: [...] }
+  if (result?.success && Array.isArray(result.data)) {
+    return result.data;
+  }
+  // Handle direct array response
+  if (Array.isArray(result)) {
+    return result;
+  }
+  return [];
 }
 
 export default function SkillLevelsPage() {
