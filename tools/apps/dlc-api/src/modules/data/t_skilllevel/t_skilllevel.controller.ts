@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../common/middleware';
+import { JwtAuthGuard, Public } from '../../../common/middleware';
 import { buildSuccessResponse } from '../../../common/utils';
 import { TSkilllevelService } from './t_skilllevel.service';
 import { SkillLevelQueryDto } from './dto/t_skilllevel-query.dto';
@@ -27,6 +27,7 @@ export class TSkilllevelController {
     return buildSuccessResponse(result.data, undefined, result.meta);
   }
 
+  @Public()
   @Get('count')
   async count() {
     const result = await this.service.count();

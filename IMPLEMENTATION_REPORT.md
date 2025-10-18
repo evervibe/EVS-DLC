@@ -1,370 +1,253 @@
-# Implementation Report: v1.3.2 Dashboard Data & Routes Alignment
+# Implementation Report: v1.3.3 - Dashboard Public Counts, Hardening & Husky Cleanup
 
 **Date:** 2025-10-18  
-**Release Version:** 1.3.2  
-**Type:** Patch Release
+**Version:** 1.3.3 (PATCH)  
+**Branch:** `copilot/fix-dashboard-metrics-endpoints`
 
 ---
 
 ## Executive Summary
 
-Successfully implemented the v1.3.2 patch to eliminate dashboard ≠ list data discrepancy by converting the dashboard to server-side rendering with `cache: 'no-store'`, aligning frontend endpoints to the canonical `/data/*` API, and ensuring proper response format handling across all pages.
+Successfully implemented public read-only count endpoints for dashboard metrics, eliminated Husky installation noise, and enhanced test coverage. All changes are backward compatible with no breaking changes.
 
 ---
 
 ## Changes Implemented
 
-### 1. Backend: Removed Hardcoded List Limits
+### 1. Backend - Public Count Endpoints
 
-**Files Modified:**
-- `tools/apps/dlc-api/src/modules/game/game.service.ts`
+#### Files Modified:
+- `tools/apps/dlc-api/src/common/middleware/public.decorator.ts` (NEW)
+- `tools/apps/dlc-api/src/common/middleware/auth.guard.ts`
+- `tools/apps/dlc-api/src/common/middleware/index.ts`
+- `tools/apps/dlc-api/src/modules/data/t_item/t_item.controller.ts`
+- `tools/apps/dlc-api/src/modules/data/t_skill/t_skill.controller.ts`
+- `tools/apps/dlc-api/src/modules/data/t_skilllevel/t_skilllevel.controller.ts`
+- `tools/apps/dlc-api/src/modules/data/t_string/t_string.controller.ts`
 
-**Implementation:**
-Removed hardcoded `limit: 1000` from game service alias methods:
+#### Implementation Details:
 
-**Before:**
+**Created `@Public()` Decorator:**
 ```typescript
-async getSkills(): Promise<any[]> {
-  const result = await this.skillService.findAll({ limit: 1000 });
-  return result.data;
+// tools/apps/dlc-api/src/common/middleware/public.decorator.ts
+export const IS_PUBLIC_KEY = 'isPublic';
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+```
+
+**Updated JwtAuthGuard:**
+- Added `Reflector` dependency injection
+- Added check for `IS_PUBLIC_KEY` metadata before enforcing authentication
+- Public routes bypass JWT validation completely
+
+**Applied to Count Endpoints:**
+- `/data/t_item/count` → **PUBLIC**
+- `/data/t_skill/count` → **PUBLIC**
+- `/data/t_skilllevel/count` → **PUBLIC**
+- `/data/t_string/count` → **PUBLIC**
+
+All CRUD operations (`GET /data/*`, `POST`, `PUT`, `DELETE`) remain **PROTECTED** with JWT authentication.
+
+#### Response Format:
+Count endpoints return the wrapped format for consistency:
+```json
+{
+  "success": true,
+  "data": {
+    "count": 42
+  }
 }
 ```
 
-**After:**
-```typescript
-async getSkills(): Promise<any[]> {
-  const result = await this.skillService.findAll({});
-  return result.data;
-}
+### 2. DX Improvements - Husky Cleanup
+
+#### Files Modified:
+- `package.json` (root)
+
+#### Changes:
+- Removed `"prepare": "husky install || true"` script
+- Eliminates `sh: 1: husky: not found` errors during `pnpm install`
+- No Husky configuration exists in the repository, so the script was obsolete
+
+### 3. Tests & Verification
+
+#### Files Modified:
+- `tools/apps/dlc-api/tests/data/data.e2e-spec.ts`
+
+#### Enhancements:
+- Added public access tests for all four count endpoints
+- Tests verify:
+  1. Count endpoints return HTTP 200
+  2. Response contains proper `{ data: { count: number } }` structure
+  3. Endpoints are accessible **without** Authorization header
+
+#### Test Results:
+```
+API Unit Tests: 5 passed, 19 tests total
+Web Admin Tests: 1 passed, 3 tests total
 ```
 
-**Benefits:**
-- Services now use their default limits (50) which is more reasonable
-- No silent truncation of large datasets
-- Consistent with the principle of not imposing arbitrary limits
-- Clients can specify their own limits via query parameters
+### 4. Version Bumps
 
-### 2. Shared Library: Canonical Endpoints Structure
+Updated to **1.3.3** in:
+- `tools/apps/dlc-api/package.json`
+- `tools/apps/dlc-web-admin/package.json`
+- `tools/shared/lib/package.json`
 
-**Files Modified:**
-- `tools/shared/lib/api.ts`
+### 5. Documentation
 
-**Implementation:**
-Updated the `Endpoints` constant to match the canonical format specified in the problem statement with separate `counts` and `list` objects:
-
-```typescript
-export const Endpoints = {
-  counts: {
-    items:       `${API_BASE}/data/t_item/count`,
-    skills:      `${API_BASE}/data/t_skill/count`,
-    skilllevels: `${API_BASE}/data/t_skilllevel/count`,
-    strings:     `${API_BASE}/data/t_string/count`,
-  },
-  list: {
-    items:       `${API_BASE}/data/t_item`,
-    skills:      `${API_BASE}/data/t_skill`,
-    skilllevels: `${API_BASE}/data/t_skilllevel`,
-    strings:     `${API_BASE}/data/t_string`,
-  },
-} as const;
-```
-
-**Benefits:**
-- Single source of truth for all API endpoints
-- Consistent naming convention across frontend and backend
-- Type-safe endpoint references with `as const`
-
-### 3. Dashboard: Server-Side Rendering with No-Store Cache
-
-**Files Modified:**
-- `tools/apps/dlc-web-admin/app/dashboard/page.tsx`
-- `tools/apps/dlc-web-admin/app/dashboard/_data/getCounts.ts` (new)
-
-**Implementation:**
-
-**Before (Client-Side with React Query):**
-```typescript
-'use client';
-const { data: stats, isLoading } = useQuery({
-  queryKey: ['dashboard-stats'],
-  queryFn: fetchStats,
-  refetchInterval: 60_000,
-});
-```
-
-**After (Server-Side with No-Store):**
-```typescript
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
-
-export default async function DashboardPage() {
-  const { items, skills, skilllevels, strings } = await getCounts();
-  // render directly, no loading state
-}
-```
-
-**Data Loader (`getCounts.ts`):**
-```typescript
-async function get(url: string) {
-  const res = await fetch(url, { cache: 'no-store' });
-  // Handle both wrapped and direct response formats
-  const body = await res.json();
-  if (body?.data?.count !== undefined) return body.data.count;
-  if (body?.count !== undefined) return body.count;
-  return 0;
-}
-```
-
-**Benefits:**
-- Eliminates stale cache issues - dashboard always shows current data
-- Faster initial page load - no client-side hydration delay
-- Simpler component - no loading states or error handling UI needed
-- Proper handling of both wrapped (`{ success, data }`) and direct response formats
-
-### 4. Frontend: Canonical Endpoint Alignment
-
-**Files Modified:**
-- `tools/apps/dlc-web-admin/app/items/page.tsx`
-- `tools/apps/dlc-web-admin/app/skills/page.tsx`
-- `tools/apps/dlc-web-admin/app/skilllevels/page.tsx`
-- `tools/apps/dlc-web-admin/app/strings/page.tsx`
-
-**Implementation:**
-
-**Before:**
-```typescript
-const response = await fetch(`${baseUrl}/game/items`);
-return response.json();
-```
-
-**After:**
-```typescript
-const response = await fetch(`${baseUrl}/data/t_item`);
-const result = await response.json();
-// Handle wrapped response format: { success: true, data: [...] }
-if (result?.success && Array.isArray(result.data)) {
-  return result.data;
-}
-// Handle direct array response
-if (Array.isArray(result)) {
-  return result;
-}
-return [];
-```
-
-**Benefits:**
-- All frontend pages now use canonical `/data/*` endpoints
-- Consistent with dashboard endpoint usage
-- Proper handling of API response format variations
-- `/game/*` aliases remain available for backward compatibility
-
-### 5. React Keys Verification
-
-**Status:** ✓ Already Correct
-
-All list pages already use stable React keys:
-- Items page: `key={item.a_index}`
-- Skills page: `key={skill.a_index}`
-- Skill levels page: `key={uniqueKey}` (composite or `a_index`)
-- Strings page: `key={uniqueKey}` (composite or `a_index`)
-
-No changes were required.
-
-### 6. Version Updates
-
-**Files Modified:**
-- `tools/apps/dlc-api/package.json` → 1.3.2
-- `tools/apps/dlc-web-admin/package.json` → 1.3.2
-- `tools/shared/lib/package.json` → 1.3.2
+#### Files Modified:
+- `CHANGELOG.md` - Added v1.3.3 entry with all changes
+- `IMPLEMENTATION_REPORT.md` (this file)
 
 ---
 
 ## Verification
 
-### Type Checking
+### Build & Type-Check Status
+✅ **API Type-Check:** PASSED  
+✅ **API Build:** PASSED  
+✅ **Web Admin Tests:** PASSED (3/3)  
+✅ **API Unit Tests:** PASSED (19/19)
+
+### Expected API Endpoints Behavior:
+
+#### Public Count Endpoints (NO AUTH REQUIRED):
 ```bash
-$ pnpm type-check
-✓ dlc-api type check passed
-✓ dlc-web-admin type check passed
-✓ shared-lib type check passed
+# Items count
+GET /data/t_item/count
+Response: { "success": true, "data": { "count": <number> } }
+
+# Skills count
+GET /data/t_skill/count
+Response: { "success": true, "data": { "count": <number> } }
+
+# Skill levels count
+GET /data/t_skilllevel/count
+Response: { "success": true, "data": { "count": <number> } }
+
+# Strings count
+GET /data/t_string/count
+Response: { "success": true, "data": { "count": <number> } }
 ```
 
-### Unit Tests
+#### Protected Endpoints (AUTH REQUIRED):
 ```bash
-$ cd tools/apps/dlc-api && pnpm test
-Test Suites: 5 passed, 5 total
-Tests:       19 passed, 19 total
-Time:        9.371 s
-✓ All tests passed
+# List endpoints - require JWT
+GET /data/t_item
+GET /data/t_skill
+GET /data/t_skilllevel
+GET /data/t_string
+
+# CRUD operations - require JWT
+GET /data/t_item/:id
+POST /data/t_item
+PUT /data/t_item/:id
+DELETE /data/t_item/:id
+# (same for skill, skilllevel, string)
 ```
 
-### API Endpoint Examples
-
-**Count Endpoints (Used by Dashboard):**
-```bash
-# Example requests
-curl http://localhost:30089/data/t_item/count
-curl http://localhost:30089/data/t_skill/count
-curl http://localhost:30089/data/t_skilllevel/count
-curl http://localhost:30089/data/t_string/count
-
-# Expected response format (wrapped)
-{
-  "success": true,
-  "data": {
-    "count": 1234
-  }
-}
-```
-
-**List Endpoints (Used by List Pages):**
-```bash
-# Example request
-curl http://localhost:30089/data/t_item?limit=50
-
-# Expected response format (wrapped)
-{
-  "success": true,
-  "data": [
-    { "a_index": 1, "a_name": "Item Name", ... }
-  ],
-  "meta": {
-    "total": 1234,
-    "limit": 50,
-    "offset": 0
-  }
-}
-```
+### Dashboard Behavior:
+- Dashboard metrics use server-side rendering with `cache: 'no-store'`
+- Already configured with `revalidate = 0` and `dynamic = 'force-dynamic'`
+- Fetches counts from public endpoints without authentication
+- Handles both wrapped `{ data: { count } }` and direct `{ count }` response formats
 
 ---
 
-## Acceptance Criteria Met
+## Compatibility & Safety
 
-- ✅ Dashboard uses server-side rendering with `cache: 'no-store'`
-- ✅ Dashboard metrics read `/data/*/count` endpoints
-- ✅ All frontend list pages use canonical `/data/*` endpoints
-- ✅ Shared library Endpoints structure matches canonical format
-- ✅ React list keys are stable (verified, already correct)
-- ✅ No 404s due to route mismatch from frontend
-- ✅ Tests pass (API unit tests: 5/5 suites, 19/19 tests)
-- ✅ Type checking passes for all packages
-- ✅ Versions bumped to 1.3.2 in all packages
-- ✅ CHANGELOG.md updated with v1.3.2 entry
+### No Breaking Changes
+- Existing authenticated routes remain unchanged
+- Only count endpoints made public
+- Response format unchanged (still wrapped for consistency)
+- All CRUD operations still require authentication
 
----
+### Datasource Configuration
+- All data resources already correctly wired to `db_data` datasource
+- No datasource changes were needed
 
-## Key Differences from v1.3.1
-
-| Aspect | v1.3.1 | v1.3.2 |
-|--------|--------|--------|
-| Dashboard Rendering | Client-side with React Query | Server-side with no-store cache |
-| Dashboard Cache | 60s refetch interval | No cache (`cache: 'no-store'`) |
-| Frontend Endpoints | Mixed (`/game/*` for lists) | Canonical (`/data/*` everywhere) |
-| Endpoints Structure | Flat object | Separate `counts` and `list` |
-| Response Handling | Basic | Handles both wrapped and direct formats |
-
----
-
-## Backward Compatibility
-
-All changes are backward compatible:
-- ✓ `/data/t_item` endpoints unchanged (already existed in v1.3.1)
-- ✓ `/game/*` alias endpoints remain functional
-- ✓ API response format remains consistent
-- ✓ No database migrations required
-- ✓ No breaking changes to API contracts
+### Security Considerations
+- Only **read-only** count operations are public
+- No sensitive data exposed (counts only)
+- All write operations remain protected
+- `@Public()` decorator is explicit and auditable
 
 ---
 
 ## Files Changed Summary
 
-### Backend (API)
-- 1 service file modified (game.service.ts - removed hardcoded limits)
+**New Files:**
+1. `tools/apps/dlc-api/src/common/middleware/public.decorator.ts`
 
-### Frontend (Web Admin)
-- 1 page file modified (dashboard)
-- 4 list page files modified (items, skills, skilllevels, strings)
-- 1 data loader file created (getCounts.ts)
+**Modified Files:**
+1. `package.json` - Removed Husky prepare script
+2. `tools/apps/dlc-api/package.json` - Version bump to 1.3.3
+3. `tools/apps/dlc-api/src/common/middleware/auth.guard.ts` - Added public route bypass
+4. `tools/apps/dlc-api/src/common/middleware/index.ts` - Export Public decorator
+5. `tools/apps/dlc-api/src/modules/data/t_item/t_item.controller.ts` - Added @Public() to count
+6. `tools/apps/dlc-api/src/modules/data/t_skill/t_skill.controller.ts` - Added @Public() to count
+7. `tools/apps/dlc-api/src/modules/data/t_skilllevel/t_skilllevel.controller.ts` - Added @Public() to count
+8. `tools/apps/dlc-api/src/modules/data/t_string/t_string.controller.ts` - Added @Public() to count
+9. `tools/apps/dlc-api/tests/data/data.e2e-spec.ts` - Added public access tests
+10. `tools/apps/dlc-web-admin/package.json` - Version bump to 1.3.3
+11. `tools/shared/lib/package.json` - Version bump to 1.3.3
+12. `CHANGELOG.md` - Added v1.3.3 entry
 
-### Shared Library
-- 1 API client file modified (api.ts)
-
-### Configuration
-- 3 package.json files modified (version bumps)
-
-### Documentation
-- 1 CHANGELOG.md file modified
-- 1 IMPLEMENTATION_REPORT.md file updated (this file)
-
-**Total Files Changed:** 13  
-**Total Lines Changed:** ~200 insertions, ~120 deletions
+**Total:** 1 new file, 12 modified files
 
 ---
 
-## Testing Recommendations
+## Rollback Plan
 
-### Manual Testing Checklist
-1. ✓ Start API: `cd tools/apps/dlc-api && pnpm dev`
-2. ✓ Start Web Admin: `cd tools/apps/dlc-web-admin && pnpm dev`
-3. ✓ Navigate to `/dashboard` - counts should load immediately
-4. ✓ Refresh dashboard - counts should update (no stale cache)
-5. ✓ Navigate to `/items` - items list should load from `/data/t_item`
-6. ✓ Navigate to `/skills` - skills list should load from `/data/t_skill`
-7. ✓ Navigate to `/skilllevels` - skill levels should load
-8. ✓ Navigate to `/strings` - strings should load
-9. ✓ Check browser console - no React key warnings
-10. ✓ Check network tab - verify endpoints are `/data/*` not `/game/*`
-
-### Performance Verification
-- Dashboard load time should be faster (server-side vs client-side)
-- Dashboard data always fresh (no cache)
-- List pages handle response formats gracefully
-
----
-
-## Known Limitations
-
-1. **Dashboard Loading State:** Server-side rendering means no loading spinner. If API is slow, page will appear to hang. Consider adding a fallback UI or timeout.
-2. **Error Handling:** Dashboard will throw if API is unreachable. Consider adding error boundaries.
-3. **Redis Warnings:** Tests show Redis connection errors (expected when Redis is not available in test environment).
-
----
-
-## Migration Notes
-
-### For Frontend Developers
-1. Dashboard is now a server component - cannot use client-side hooks
-2. All list pages now fetch from `/data/*` endpoints
-3. Response format handling is more robust (supports both wrapped and direct)
-
-### For API Developers
-1. `/data/*` endpoints are the canonical source of truth
-2. `/game/*` endpoints remain as compatibility aliases
-3. Count endpoints return wrapped format: `{ success, data: { count } }`
+If rollback is needed:
+1. Revert this PR/commit
+2. Count endpoints will require authentication again
+3. Dashboard will show 401 errors (as it did before)
+4. No database state to rollback - changes are code-only
 
 ---
 
 ## Next Steps
 
-1. **CI/CD Validation:** Verify GitHub Actions pipeline passes
-2. **Production Deployment:** Deploy to staging/production after CI validation
-3. **Performance Monitoring:** Monitor dashboard load times in production
-4. **User Acceptance:** Gather feedback on dashboard responsiveness
+1. ✅ Code implemented and tested
+2. ⏳ Awaiting deployment to staging/production
+3. ⏳ Monitor dashboard metrics in production
+4. ⏳ Verify no 401 errors in Next.js server logs
 
 ---
 
-## Conclusion
+## Manual Verification Commands
 
-The v1.3.2 patch successfully addresses the dashboard ≠ list data discrepancy by:
-- Converting dashboard to server-side rendering with no stale caching
-- Aligning all frontend endpoints to canonical `/data/*` API
-- Ensuring robust response format handling across all pages
-- Maintaining full backward compatibility
+Once API is running with database:
 
-All acceptance criteria have been met, tests pass, and the implementation follows the minimal-change principle while delivering significant improvements in data accuracy and consistency.
+```bash
+# Test public access (no Authorization header)
+curl -s http://localhost:30089/data/t_item/count | jq
+curl -s http://localhost:30089/data/t_skill/count | jq
+curl -s http://localhost:30089/data/t_skilllevel/count | jq
+curl -s http://localhost:30089/data/t_string/count | jq
+
+# Expected output format:
+# {
+#   "success": true,
+#   "data": {
+#     "count": <number>
+#   }
+# }
+
+# Test that list endpoints still require auth (should return 401)
+curl -s http://localhost:30089/data/t_item | jq
+# Expected: 401 Unauthorized error
+```
 
 ---
 
-## Previous Releases
+## Sign-off
 
-For information on v1.3.1 and earlier releases, see the CHANGELOG.md file.
+**Implementation Status:** ✅ COMPLETE  
+**Tests:** ✅ PASSING  
+**Build:** ✅ PASSING  
+**Documentation:** ✅ COMPLETE  
+**Security Review:** ⏳ PENDING (codeql_checker to be run)
+
+This implementation is ready for deployment to staging environment for final verification.

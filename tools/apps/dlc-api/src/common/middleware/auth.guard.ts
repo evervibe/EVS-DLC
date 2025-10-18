@@ -1,12 +1,26 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 import { verify, JwtPayload } from 'jsonwebtoken';
 import { ApiError } from '../errors';
 import { env } from '../../config/env';
+import { IS_PUBLIC_KEY } from './public.decorator';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
   canActivate(context: ExecutionContext): boolean {
+    // Check if the route is marked as public
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest<FastifyRequest>();
     const authHeader = request.headers.authorization;
 

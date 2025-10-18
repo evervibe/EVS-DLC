@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../common/middleware';
+import { JwtAuthGuard, Public } from '../../../common/middleware';
 import { buildSuccessResponse } from '../../../common/utils';
 import { ListQueryDto } from '../dto/list-query.dto';
 import { TStringService } from './t_string.service';
@@ -27,6 +27,7 @@ export class TStringController {
     return buildSuccessResponse(result.data, undefined, result.meta);
   }
 
+  @Public()
   @Get('count')
   async count() {
     const result = await this.service.count();
