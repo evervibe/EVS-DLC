@@ -6,7 +6,7 @@
  * without exposing the token to client-side JavaScript.
  * 
  * Security:
- * - JWT stored in HttpOnly cookie (dlc_token)
+ * - JWT stored in HttpOnly cookie (configurable via AUTH_COOKIE_NAME)
  * - Cookie is never echoed back to the client
  * - Selective header forwarding (no hop-by-hop headers)
  * - 30s timeout per request
@@ -18,8 +18,9 @@ import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:30089';
+const API_BASE = process.env.DLC_API_BASE || process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:30089';
 const TIMEOUT_MS = 30000;
+const AUTH_COOKIE_NAME = process.env.AUTH_COOKIE_NAME || 'dlc_token';
 
 // Headers to exclude from forwarding
 const HOP_BY_HOP_HEADERS = new Set([
@@ -74,7 +75,9 @@ async function handleProxy(request: NextRequest, params: { path: string[] }) {
 
   // Get JWT from HttpOnly cookie
   const cookieStore = await cookies();
-  const jwt = cookieStore.get('dlc_token')?.value;
+  const jwt = cookieStore.get(AUTH_COOKIE_NAME)?.value
+         || cookieStore.get('token')?.value
+         || cookieStore.get('access_token')?.value;
 
   // Build target URL
   const targetUrl = buildTargetUrl(path, request.nextUrl.searchParams);
