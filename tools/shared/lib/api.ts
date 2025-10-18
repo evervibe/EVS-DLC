@@ -38,7 +38,7 @@ async function fetchApi<T>(
     });
 
     if (!response.ok) {
-      let errorData;
+      let errorData: any;
       try {
         errorData = await response.json();
       } catch {
@@ -47,7 +47,7 @@ async function fetchApi<T>(
       
       throw new ApiError(
         response.status,
-        errorData?.message || `HTTP ${response.status}: ${response.statusText}`,
+        (typeof errorData === 'object' && errorData?.message) || `HTTP ${response.status}: ${response.statusText}`,
         errorData
       );
     }
@@ -57,7 +57,7 @@ async function fetchApi<T>(
       return {} as T;
     }
 
-    return await response.json();
+    return (await response.json()) as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

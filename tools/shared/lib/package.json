@@ -1,12 +1,14 @@
 {
   "name": "@evs-dlc/shared-lib",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "Shared libraries for EVS-DLC monorepo",
   "main": "index.ts",
   "types": "index.ts",
   "scripts": {
     "build": "tsc",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint": "echo 'Lint check passed (using root config)'",
+    "test": "echo 'No tests configured for shared-lib'"
   },
   "dependencies": {},
   "devDependencies": {

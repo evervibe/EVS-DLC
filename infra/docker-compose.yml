@@ -1,4 +1,4 @@
-# EVS-DLC Production Infrastructure - v1.2.0
+# EVS-DLC Production Infrastructure - v1.3.0
 # Complete stack: MySQL, Redis, API, Web Admin
 
 version: '3.8'
@@ -12,7 +12,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secret}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-db_game}
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
     volumes:
       - mysql-data:/var/lib/mysql
       - ./DB/game/servers/dev:/docker-entrypoint-initdb.d:ro
@@ -38,7 +38,7 @@ services:
     image: redis:7-alpine
     container_name: evs-dlc-redis
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     command: redis-server --appendonly yes
     volumes:
       - redis-data:/data
@@ -53,8 +53,8 @@ services:
   # DLC API Backend
   api:
     build:
-      context: ../tools/apps/dlc-api
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: tools/apps/dlc-api/Dockerfile
     container_name: evs-dlc-api
     environment:
       NODE_ENV: ${NODE_ENV:-production}
@@ -81,6 +81,11 @@ services:
       DB_POST_NAME: ${DB_POST_NAME:-db_post}
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in environment}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?ADMIN_USERNAME must be set in environment}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD must be set in environment}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5174}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      APP_VERSION: 1.3.0
     ports:
       - "${API_PORT:-30089}:30089"
     depends_on:
@@ -100,15 +105,15 @@ services:
   # DLC Web Admin Frontend
   web:
     build:
-      context: ../tools/apps/dlc-web-admin
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: tools/apps/dlc-web-admin/Dockerfile
     container_name: evs-dlc-web
     environment:
       # Note: NEXT_PUBLIC_* variables must be set at build time for client-side access
       # For production, build the image with proper API URL or use runtime configuration
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:30089}
       NEXT_PUBLIC_APP_ENV: ${NODE_ENV:-production}
-      NEXT_PUBLIC_APP_VERSION: 1.2.0
+      NEXT_PUBLIC_APP_VERSION: 1.3.0
     ports:
       - "${WEB_PORT:-5174}:5174"
     depends_on:
@@ -128,7 +133,7 @@ services:
     image: adminer:4
     container_name: evs-dlc-adminer
     ports:
-      - "${ADMINER_PORT:-8080}:8080"
+      - "127.0.0.1:${ADMINER_PORT:-8080}:8080"
     environment:
       ADMINER_DEFAULT_SERVER: mysql
     depends_on:
