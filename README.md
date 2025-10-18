@@ -1,16 +1,34 @@
 # EVS-DLC - EverVibe Studios DLC Development Ecosystem
 
-**Version:** 0.8.5 (HTTP Dev Bridge Patch)
-**Status:** ✅ Production Ready for Development
+**Version:** 1.0.0 (Unified Architecture)  
+**Status:** 🚧 Migration in Progress
 
-Complete development ecosystem for DLC content management, featuring a NestJS backend API and React frontend admin interface.
+Complete development ecosystem for DLC content management, featuring a modern NestJS backend API and Next.js frontend admin interface with unified architecture.
+
+---
+
+## 🎯 What's New in v1.0.0
+
+### ✨ Major Changes
+- 🔄 **Frontend Migration:** Vite → Next.js 15 (App Router)
+- 🎨 **Styling:** Tailwind CSS 3.4 (stable, well-supported)
+- 📦 **Workspace:** pnpm workspace monorepo
+- 🔧 **Backend:** Upgraded to v0.9.0 with rate limiting
+- 📚 **Documentation:** Comprehensive architecture documentation
+- ⚡ **Performance:** Optimized build pipeline
+
+### 🏗️ New Architecture
+- **Backend:** NestJS 10 + Fastify 4 (v0.9.0)
+- **Frontend:** Next.js 15 + React 19 (v1.1.0-alpha)
+- **Workspace:** pnpm monorepo with shared libraries
+- **Documentation:** Complete migration and architecture docs
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js** 18+ (with pnpm 9.12.3+)
+- **Node.js** 20+ (with pnpm 9.12.3+)
 - **Docker** & Docker Compose
 - **MySQL** 8.0+ (via Docker)
 
@@ -22,19 +40,21 @@ cd infra/DB/game
 cp .env.example .env
 docker compose up -d
 
-# 2. Start Backend API (in new terminal)
+# 2. Install all workspace dependencies
+cd ../../
+pnpm install
+
+# 3. Start Backend API (in new terminal)
 cd tools/apps/dlc-api
 cp .env.example .env  # Optional - has defaults!
-pnpm install
 pnpm dev
 
-# 3. Start Frontend (in new terminal)
-cd tools/apps/dlc-dev-studios/frontend
-cp .env.example .env  # Optional - has defaults!
-pnpm install
+# 4. Start Frontend (in new terminal) 
+cd tools/apps/dlc-web-admin
+cp .env.example .env.local  # Optional - has defaults!
 pnpm dev
 
-# 4. Open browser
+# 5. Open browser
 open http://localhost:5174
 ```
 
@@ -46,13 +66,20 @@ open http://localhost:5174
 
 Comprehensive guides available in `/docs/`:
 
-- **[System Health Check Guide](./docs/SYSTEM_HEALTH_CHECK.md)** - Complete health monitoring system
-- **[Frontend ENV Sync Guide](./docs/FRONTEND_ENV_SYNC_GUIDE.md)** - Environment variable synchronization
-- **[Backend Boot Flow](./docs/BACKEND_BOOT_FLOW.md)** - Bootstrap process documentation
-- **[Infrastructure Status Report](./docs/INFRA_STATUS_REPORT_v0.5.1.md)** - Complete system overview
-- **[Frontend ↔ Backend Bridge Guide](./docs/FRONTEND_BACKEND_BRIDGE_GUIDE.md)** - Local HTTP connection walkthrough
-- **[HTTP Development Mode Overview](./docs/DEV_HTTP_MODE_OVERVIEW.md)** - Summary of the 0.8.5 HTTP workflow
-- **[Changelog v0.8.5](./docs/CHANGELOG_v0.8.5.md)** - Detailed release notes
+### Architecture & Migration
+- **[Repository Structure Analysis](./docs/REPOSITORY_STRUCTURE_ANALYSIS.md)** - Complete repository analysis
+- **[Migration Log v1.0.0](./docs/MIGRATION_LOG_V1.0.0.md)** - Full migration documentation
+- **[Environment Matrix](./docs/ENVIRONMENT_MATRIX.md)** - Environment variable reference
+
+### Component Documentation
+- **[DLC API Overview](./docs/DLC_API_OVERVIEW.md)** - Backend API documentation
+- **[DLC Web Admin Overview](./docs/DLC_WEB_ADMIN_OVERVIEW.md)** - Frontend documentation
+
+### Legacy Documentation
+- **[System Health Check Guide](./docs/SYSTEM_HEALTH_CHECK.md)** - Health monitoring system
+- **[Frontend ENV Sync Guide](./docs/FRONTEND_ENV_SYNC_GUIDE.md)** - Environment synchronization
+- **[Backend Boot Flow](./docs/BACKEND_BOOT_FLOW.md)** - Bootstrap process
+- **[Infrastructure Status Report](./docs/INFRA_STATUS_REPORT_v0.5.1.md)** - System overview
 
 ---
 
@@ -63,8 +90,8 @@ Comprehensive guides available in `/docs/`:
 │   DLC Web Admin  │◄───────►│     DLC API      │◄───────►│  MySQL Databases │
 │   (Frontend)     │  HTTP   │    (Backend)     │   TCP   │   (Docker)       │
 │                  │         │                  │         │                  │
-│   React 19       │         │   NestJS 10      │         │   - db_auth      │
-│   Vite 6         │         │   Fastify 4      │         │   - db_db        │
+│   Next.js 15     │         │   NestJS 10      │         │   - db_auth      │
+│   React 19       │         │   Fastify 4      │         │   - db_db        │
 │   TypeScript 5   │         │   TypeORM 0.3    │         │   - db_data      │
 │   Port: 5174     │         │   Port: 30089    │         │   - db_post      │
 └──────────────────┘         └──────────────────┘         └──────────────────┘
@@ -74,27 +101,29 @@ Comprehensive guides available in `/docs/`:
 
 ## 🔧 Technology Stack
 
-### Backend (DLC API)
-- **Framework:** NestJS 10.3 with Fastify adapter
-- **Language:** TypeScript 5.3
+### Backend (DLC API v0.9.0)
+- **Framework:** NestJS 10.4.20 with Fastify adapter
+- **Language:** TypeScript 5.3.3
 - **ORM:** TypeORM 0.3.27
 - **Database:** MySQL 8.0
-- **Validation:** Joi + class-validator
+- **Security:** @fastify/helmet 11.0.0, @fastify/rate-limit 10.3.0
+- **Validation:** Joi 18.0.1 + class-validator 0.14.2
 - **Location:** `tools/apps/dlc-api/`
 
-### Frontend (DLC Web Admin)
-- **Framework:** React 19.0
-- **Build Tool:** Vite 6.0
-- **Language:** TypeScript 5.7
-- **Styling:** Tailwind CSS 4.0
-- **State:** TanStack Query 5.62
-- **Router:** React Router 7.0
-- **Location:** `tools/apps/dlc-dev-studios/frontend/`
+### Frontend (DLC Web Admin v1.1.0-alpha)
+- **Framework:** Next.js 15.5.6 (App Router)
+- **UI Library:** React 19.2.0
+- **Language:** TypeScript 5.9.3
+- **Styling:** Tailwind CSS 3.4.17
+- **State:** @tanstack/react-query 5.90.5
+- **Forms:** react-hook-form 7.65.0
+- **Location:** `tools/apps/dlc-web-admin/`
 
 ### Infrastructure
 - **Database:** MySQL 8.0 (Docker)
-- **Cache:** Redis 7 (prepared for v0.6.0)
+- **Cache:** Redis 7 (prepared for future)
 - **Admin UI:** Adminer 4
+- **Workspace:** pnpm 9.12.3
 - **Location:** `infra/DB/game/`
 
 ---
@@ -103,29 +132,45 @@ Comprehensive guides available in `/docs/`:
 
 ```
 EVS-DLC/
-├── docs/                              # 📚 Complete documentation
+├── docs/                                   # 📚 Complete documentation
+│   ├── REPOSITORY_STRUCTURE_ANALYSIS.md   # Repository analysis
+│   ├── MIGRATION_LOG_V1.0.0.md            # Migration tracking
+│   ├── ENVIRONMENT_MATRIX.md              # Environment variables
+│   ├── DLC_API_OVERVIEW.md                # Backend documentation
+│   ├── DLC_WEB_ADMIN_OVERVIEW.md          # Frontend documentation
 │   ├── SYSTEM_HEALTH_CHECK.md
-│   ├── FRONTEND_ENV_SYNC_GUIDE.md
 │   ├── BACKEND_BOOT_FLOW.md
-│   └── INFRA_STATUS_REPORT_v0.5.1.md
+│   └── ... (legacy documentation)
 │
-├── infra/                             # Infrastructure
+├── infra/                                  # Infrastructure
 │   └── DB/
-│       └── game/                      # MySQL databases
-│           ├── docker-compose.yml     # Docker setup
-│           └── .env.example           # Configuration template
+│       └── game/                           # MySQL databases
+│           ├── docker-compose.yml          # Docker setup
+│           └── .env.example                # Configuration template
 │
-└── tools/apps/                        # Applications
-    ├── dlc-api/                       # Backend API
-    │   ├── src/                       # Source code
-    │   ├── .env.example               # Configuration template
-    │   └── package.json               # Dependencies
-    │
-    └── dlc-dev-studios/
-        └── frontend/                  # Frontend Web Admin
-            ├── src/                   # Source code
-            ├── .env.example           # Configuration template
-            └── package.json           # Dependencies
+├── tools/                                  # Application workspace
+│   ├── apps/
+│   │   ├── dlc-api/                        # Backend API (v0.9.0)
+│   │   │   ├── src/                        # Source code
+│   │   │   ├── .env.example                # Configuration template
+│   │   │   └── package.json                # Dependencies
+│   │   │
+│   │   ├── dlc-web-admin/                  # Frontend Admin (v1.1.0-alpha)
+│   │   │   ├── app/                        # Next.js App Router
+│   │   │   ├── lib/                        # Utilities
+│   │   │   ├── .env.example                # Configuration template
+│   │   │   └── package.json                # Dependencies
+│   │   │
+│   │   └── dlc-dev-studios/
+│   │       └── frontend/                   # Legacy Vite app (deprecated)
+│   │
+│   └── shared/                             # Shared libraries (planned)
+│       ├── lib/                            # Common utilities
+│       └── ui/                             # Design system
+│
+├── pnpm-workspace.yaml                     # Workspace configuration
+├── LICENSE_CUSTOM.md                       # EverVibe Studios license
+└── README.md                               # This file
 ```
 
 ---
@@ -164,11 +209,19 @@ DB_AUTH_NAME=db_auth
 ### Frontend Configuration
 ```bash
 # API Connection
-VITE_API_URL=http://localhost:30089
-# Optional overrides
-# VITE_API_HEALTH_URL=http://localhost:30089/health
-# VITE_REDIS_HEALTH_URL=http://localhost:30089/ops/redis
-# VITE_DB_HEALTH_URL=http://localhost:30089/ops/db
+NEXT_PUBLIC_API_URL=http://localhost:30089
+
+# Application
+NEXT_PUBLIC_APP_ENV=development
+NEXT_PUBLIC_APP_VERSION=1.1.0-alpha
+
+# Optional: Debug mode
+NEXT_PUBLIC_DEBUG=true
+```
+
+**Note:** Next.js uses `NEXT_PUBLIC_*` prefix for client-side environment variables.
+
+---
 
 # Application
 VITE_APP_ENV=development
@@ -252,8 +305,10 @@ curl http://localhost:30089/health
 
 # Check CORS (should see logs in API terminal)
 # Check environment variables match
-cat tools/apps/dlc-dev-studios/frontend/.env.example
+cat tools/apps/dlc-web-admin/.env.local
 ```
+
+**Note:** The frontend has been migrated to `dlc-web-admin/`
 
 ### Database connection fails
 ```bash
@@ -349,18 +404,27 @@ pnpm build
 
 ## 🗺️ Roadmap
 
-### v0.6.0 (Next)
+### v1.0.0 (Current - In Progress)
+- ✅ Backend v0.9.0 stable
+- ✅ Next.js 15 foundation
+- ✅ pnpm workspace
+- ✅ Comprehensive documentation
+- 🚧 Component migration
+- 🚧 Full feature parity
+
+### v1.1.0 (Next)
+- ✨ Complete component migration
+- ✨ Authentication system
 - ✨ Redis cache integration
 - ✨ Data preload system
 - ✨ Enhanced health metrics
-- ✨ Cache warming strategies
 
 ### Future Versions
-- 🔐 Authentication system
 - 🔐 RBAC implementation
 - 🔐 JWT token validation
 - 📊 Performance monitoring
 - 🚀 Auto-scaling support
+- 🎨 Advanced UI features
 
 ---
 
@@ -422,4 +486,4 @@ All rights reserved.
 ---
 
 **Built with ❤️ by EverVibe Studios**  
-**Version:** 0.8.5 | **Updated:** 2025-11-20
+**Version:** 1.0.0 | **Updated:** 2025-10-18
