@@ -217,6 +217,11 @@ export const stringsApi = {
  * Fetch JSON via proxy with no-store caching
  */
 export async function getJSON<T>(path: string, options?: RequestInit): Promise<T> {
+  // Validate path starts with / or /api/dlc to prevent SSRF
+  if (!path.startsWith('/')) {
+    throw new ApiError(400, 'Invalid path: must start with /', 'INVALID_PATH');
+  }
+  
   const proxyPath = path.startsWith('/api/dlc') ? path : `/api/dlc${path}`;
   
   const response = await fetch(proxyPath, {

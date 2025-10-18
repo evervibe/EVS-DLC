@@ -493,6 +493,12 @@ export class StringsService {
   async publishExport(dto: ExportPublishDto): Promise<any> {
     this.logger.log('Publishing export', { version: dto.version });
 
+    // Sanitize version to prevent path injection
+    const sanitizedVersion = dto.version.replace(/[^a-zA-Z0-9._-]/g, '');
+    if (!sanitizedVersion || sanitizedVersion !== dto.version) {
+      throw ApiError.badRequest('Invalid version format. Use only alphanumeric characters, dots, dashes, and underscores.', 'INVALID_VERSION');
+    }
+
     // Get approved strings only
     const approved = await this.stringRepo
       .createQueryBuilder('str')
@@ -539,17 +545,17 @@ export class StringsService {
     };
 
     // Write files
-    const exportDir = path.join(process.cwd(), 'infra', 'exports', 'strings', dto.version);
+    const exportDir = path.join(process.cwd(), 'infra', 'exports', 'strings', sanitizedVersion);
     await fs.mkdir(exportDir, { recursive: true });
 
     await fs.writeFile(path.join(exportDir, 'strings.load'), loadContent, 'utf8');
     await fs.writeFile(path.join(exportDir, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf8');
 
-    this.logger.log('Export published', { version: dto.version, hash, rowCount: approved.length });
+    this.logger.log('Export published', { version: sanitizedVersion, hash, rowCount: approved.length });
 
     return {
       success: true,
-      version: dto.version,
+      version: sanitizedVersion,
       exportDir,
       manifest,
       files: {
