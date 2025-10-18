@@ -101,6 +101,17 @@ export const Endpoints = {
     skilllevels: '/data/t_skilllevel',
     strings:     '/data/t_string',
   },
+  strings: {
+    list:          '/strings',
+    detail:        (id: number) => `/strings/${id}`,
+    update:        (id: number) => `/strings/${id}`,
+    submitReview:  (id: number) => `/strings/${id}/submit-review`,
+    approve:       (id: number) => `/strings/${id}/approve`,
+    reject:        (id: number) => `/strings/${id}/reject`,
+    bulkImport:    '/strings/bulk/import',
+    exportPreview: '/strings/export/preview',
+    exportPublish: '/strings/export/publish',
+  },
 } as const;
 
 /**
@@ -196,3 +207,113 @@ export const stringsApi = {
   delete: (id: number) => remove('strings', id),
   count: () => getCount(Endpoints.counts.strings),
 };
+
+/**
+ * Proxy-aware fetch helpers for SSR with authentication
+ * These should be used in Next.js server components and actions
+ */
+
+/**
+ * Fetch JSON via proxy with no-store caching
+ */
+export async function getJSON<T>(path: string, options?: RequestInit): Promise<T> {
+  const proxyPath = path.startsWith('/api/dlc') ? path : `/api/dlc${path}`;
+  
+  const response = await fetch(proxyPath, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+  });
+
+  if (!response.ok) {
+    let errorData: any;
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = await response.text();
+    }
+    
+    throw new ApiError(
+      response.status,
+      (typeof errorData === 'object' && errorData?.message) || `HTTP ${response.status}: ${response.statusText}`,
+      errorData
+    );
+  }
+
+  // Handle 204 No Content
+  if (response.status === 204) {
+    return {} as T;
+  }
+
+  return (await response.json()) as T;
+}
+
+/**
+ * POST JSON via proxy
+ */
+export async function postJSON<T>(path: string, body?: any, options?: RequestInit): Promise<T> {
+  const proxyPath = path.startsWith('/api/dlc') ? path : `/api/dlc${path}`;
+  
+  return getJSON<T>(proxyPath, {
+    ...options,
+    method: 'POST',
+    body: body ? JSON.stringify(body) : undefined,
+  });
+}
+
+/**
+ * PUT JSON via proxy
+ */
+export async function putJSON<T>(path: string, body?: any, options?: RequestInit): Promise<T> {
+  const proxyPath = path.startsWith('/api/dlc') ? path : `/api/dlc${path}`;
+  
+  return getJSON<T>(proxyPath, {
+    ...options,
+    method: 'PUT',
+    body: body ? JSON.stringify(body) : undefined,
+  });
+}
+
+/**
+ * DELETE via proxy
+ */
+export async function deleteJSON<T>(path: string, options?: RequestInit): Promise<T> {
+  const proxyPath = path.startsWith('/api/dlc') ? path : `/api/dlc${path}`;
+  
+  return getJSON<T>(proxyPath, {
+    ...options,
+    method: 'DELETE',
+  });
+}
+
+/**
+ * Upload file via proxy (multipart/form-data)
+ */
+export async function uploadFile<T>(path: string, formData: FormData, options?: RequestInit): Promise<T> {
+  const proxyPath = path.startsWith('/api/dlc') ? path : `/api/dlc${path}`;
+  
+  const response = await fetch(proxyPath, {
+    ...options,
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let errorData: any;
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = await response.text();
+    }
+    
+    throw new ApiError(
+      response.status,
+      (typeof errorData === 'object' && errorData?.message) || `HTTP ${response.status}: ${response.statusText}`,
+      errorData
+    );
+  }
+
+  return (await response.json()) as T;
+}
