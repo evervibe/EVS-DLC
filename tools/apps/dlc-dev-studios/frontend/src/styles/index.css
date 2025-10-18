@@ -4,7 +4,8 @@
 @layer base {
   body {
     @apply bg-bg text-gold font-sans;
-    background-image: theme('backgroundImage.brand-gradient');
+    background-image: theme('backgroundImage.brand-gradient'),
+      linear-gradient(135deg, #d4af37 0%, #6f42c1 100%);
     background-size: cover;
     background-attachment: fixed;
   }
