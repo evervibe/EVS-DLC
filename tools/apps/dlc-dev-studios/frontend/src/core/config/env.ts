@@ -16,7 +16,7 @@ const apiBaseUrl = normalizeBaseUrl(import.meta.env.VITE_API_URL)
 export const ENV = {
   APP_ENV: import.meta.env.VITE_APP_ENV || 'development',
   APP_NAME: import.meta.env.VITE_APP_NAME || 'DLC Web Admin',
-  APP_VERSION: import.meta.env.VITE_APP_VERSION || '0.8.5',
+  APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0-alpha',
   API_URL: apiBaseUrl,
   API_TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT ?? 8000),
   API_HEALTH_URL:
