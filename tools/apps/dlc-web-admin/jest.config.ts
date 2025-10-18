@@ -10,4 +10,5 @@ export default createJestConfig({
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
 });
