@@ -26,6 +26,7 @@ export interface EnvConfig {
   nodeEnv: string;
   jwtSecret: string;
   jwtExpiresIn: number;
+  corsOrigin: string[];
   admin: {
     username: string;
     password: string;
@@ -60,11 +61,32 @@ function getEnvBoolean(key: string, defaultValue: boolean): boolean {
 export const env: EnvConfig = {
   apiPort: getEnvNumber('API_PORT', 30089),
   nodeEnv: getEnvValue('NODE_ENV', 'development'),
-  jwtSecret: getEnvValue('JWT_SECRET', 'dev-secret'),
+  jwtSecret: (() => {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET environment variable is required');
+    }
+    return secret;
+  })(),
   jwtExpiresIn: getEnvNumber('JWT_EXPIRES_IN', 3600),
+  corsOrigin: (process.env.CORS_ORIGIN || 'http://localhost:5174')
+    .split(',')
+    .map((s) => s.trim()),
   admin: {
-    username: getEnvValue('ADMIN_USERNAME', 'admin'),
-    password: getEnvValue('ADMIN_PASSWORD', 'admin'),
+    username: (() => {
+      const username = process.env.ADMIN_USERNAME;
+      if (!username) {
+        throw new Error('ADMIN_USERNAME environment variable is required');
+      }
+      return username;
+    })(),
+    password: (() => {
+      const password = process.env.ADMIN_PASSWORD;
+      if (!password) {
+        throw new Error('ADMIN_PASSWORD environment variable is required');
+      }
+      return password;
+    })(),
   },
 
   dbAuth: {
