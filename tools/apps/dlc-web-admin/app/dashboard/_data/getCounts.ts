@@ -1,3 +1,4 @@
+// Dashboard counts use public API endpoints directly (no auth required)
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.API_URL ||
@@ -9,12 +10,6 @@ const Endpoints = {
     skills:      `${API_BASE}/data/t_skill/count`,
     skilllevels: `${API_BASE}/data/t_skilllevel/count`,
     strings:     `${API_BASE}/data/t_string/count`,
-  },
-  list: {
-    items:       `${API_BASE}/data/t_item`,
-    skills:      `${API_BASE}/data/t_skill`,
-    skilllevels: `${API_BASE}/data/t_skilllevel`,
-    strings:     `${API_BASE}/data/t_string`,
   },
 } as const;
 

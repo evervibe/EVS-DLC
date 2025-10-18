@@ -86,19 +86,20 @@ export async function getHealthReady() {
 
 /**
  * Canonical Endpoints for data resources
+ * Note: These point to the API server. For SSR with auth, use the proxy at /api/dlc/*
  */
 export const Endpoints = {
   counts: {
-    items:       `${API_BASE}/data/t_item/count`,
-    skills:      `${API_BASE}/data/t_skill/count`,
-    skilllevels: `${API_BASE}/data/t_skilllevel/count`,
-    strings:     `${API_BASE}/data/t_string/count`,
+    items:       '/data/t_item/count',
+    skills:      '/data/t_skill/count',
+    skilllevels: '/data/t_skilllevel/count',
+    strings:     '/data/t_string/count',
   },
   list: {
-    items:       `${API_BASE}/data/t_item`,
-    skills:      `${API_BASE}/data/t_skill`,
-    skilllevels: `${API_BASE}/data/t_skilllevel`,
-    strings:     `${API_BASE}/data/t_string`,
+    items:       '/data/t_item',
+    skills:      '/data/t_skill',
+    skilllevels: '/data/t_skilllevel',
+    strings:     '/data/t_string',
   },
 } as const;
 
