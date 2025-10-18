@@ -33,7 +33,7 @@ interface PaginatedResult<T> {
   };
 }
 
-interface StringWithMeta extends TStringEntity {
+export interface StringWithMeta extends TStringEntity {
   meta?: StringMetaEntity;
 }
 
@@ -45,7 +45,7 @@ interface DiffRow {
   reason?: string;
 }
 
-interface BulkImportResult {
+export interface BulkImportResult {
   summary: {
     added: number;
     updated: number;
