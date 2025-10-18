@@ -25,7 +25,7 @@ export function StatusError({ error, onRetry }: StatusErrorProps) {
             You need to be logged in to view this content.
           </div>
           <Link href="/login">
-            <Button size="sm" variant="outline" className="border-amber-500/40 text-amber-300 hover:bg-amber-500/20">
+            <Button size="sm" variant="secondary" className="border-amber-500/40 text-amber-300 hover:bg-amber-500/20">
               Go to Login
             </Button>
           </Link>
@@ -48,7 +48,7 @@ export function StatusError({ error, onRetry }: StatusErrorProps) {
           {onRetry && (
             <Button
               size="sm"
-              variant="outline"
+              variant="secondary"
               onClick={onRetry}
               className="border-rose-500/40 text-rose-300 hover:bg-rose-500/20"
             >
