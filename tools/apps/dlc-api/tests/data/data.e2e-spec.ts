@@ -138,6 +138,25 @@ describe('Data Endpoints (e2e)', () => {
       expect(typeof body.data.count).toBe('number');
       expect(body.data.count).toBeGreaterThanOrEqual(0);
     });
+
+    it('should be accessible without authentication (public)', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      // Request without Authorization header
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_item/count',
+        headers: {},
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.payload);
+      expect(body).toHaveProperty('data');
+      expect(body.data).toHaveProperty('count');
+    });
   });
 
   describe('/data/t_skill/count (GET)', () => {
@@ -158,6 +177,21 @@ describe('Data Endpoints (e2e)', () => {
       expect(body.data).toHaveProperty('count');
       expect(typeof body.data.count).toBe('number');
       expect(body.data.count).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should be accessible without authentication (public)', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_skill/count',
+        headers: {},
+      });
+
+      expect(response.statusCode).toBe(200);
     });
   });
 
@@ -180,6 +214,21 @@ describe('Data Endpoints (e2e)', () => {
       expect(typeof body.data.count).toBe('number');
       expect(body.data.count).toBeGreaterThanOrEqual(0);
     });
+
+    it('should be accessible without authentication (public)', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_skilllevel/count',
+        headers: {},
+      });
+
+      expect(response.statusCode).toBe(200);
+    });
   });
 
   describe('/data/t_string/count (GET)', () => {
@@ -200,6 +249,21 @@ describe('Data Endpoints (e2e)', () => {
       expect(body.data).toHaveProperty('count');
       expect(typeof body.data.count).toBe('number');
       expect(body.data.count).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should be accessible without authentication (public)', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_string/count',
+        headers: {},
+      });
+
+      expect(response.statusCode).toBe(200);
     });
   });
 });

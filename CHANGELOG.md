@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-10-18
+
+### Fixed
+- Public, read-only `/data/*/count` endpoints to unblock dashboard metrics without authentication
+- Dashboard fetches no longer cached server-side; clear error states for better UX
+- Removed obsolete Husky `prepare` script to eliminate install noise
+
+### Added
+- `@Public()` decorator to mark routes as accessible without JWT authentication
+- Enhanced e2e tests to verify public access to count endpoints
+
+### Changed
+- Auth guard now checks for `@Public()` decorator and bypasses authentication when present
+- Count endpoints are now publicly accessible while CRUD operations remain protected
+
 ## [1.3.2] - 2025-10-18
 
 ### Fixed
