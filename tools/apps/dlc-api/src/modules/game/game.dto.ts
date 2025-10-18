@@ -7,13 +7,17 @@ export class GetItemsDto {
 
   @IsOptional()
   @IsNumber()
-  @Min(1)
-  page?: number;
+  @Min(0)
+  offset?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(1)
   limit?: number;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class ChangeCashDto {
