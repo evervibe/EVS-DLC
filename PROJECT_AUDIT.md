@@ -207,7 +207,7 @@ Das EVS-DLC Repository ist ein professionelles, proprietäres Monorepo für ein 
 ### Konflikte/Mehrfachdefinitionen
 
 - ⚠️ **MYSQL_ROOT_PASSWORD**: Unterschiedliche Defaults in `docker-compose.yml` (secret) vs. `infra/DB/game/.env.example` (root)
-- ⚠️ **DB_GAME_NAME**: `.env.example` sagt `db_db`, `docker-compose.yml` verwendet `db_game`
+- ⚠️ **DB_GAME_NAME**: `src/config/env.ts` und `.env.example` nutzen `db_db` als Default, aber `docker-compose.yml` setzt `db_game` - Inkonsistenz zwischen Entwicklung und Docker-Deployment
 - ✅ **JWT_SECRET**: Korrekt als Pflicht definiert in `docker-compose.yml` (`:?` Syntax)
 
 ### Secrets im Repo
@@ -343,9 +343,10 @@ npm run type-check   # tsc --noEmit
 
 ### DB-Schema-Hinweise
 
-- **Migrations**: ❌ Keine TypeORM-Migrationen vorhanden (`src/migrations/` nicht existent)
+- **Migrations**: ✅ SQL-Migrations vorhanden in `tools/apps/dlc-api/migrations/db_data/` (Schema-Dumps)
+- **TypeORM-Migrations**: ❌ Keine TypeORM-Code-Migrations (nur SQL-Dumps)
 - **Prisma**: ❌ Nicht verwendet
-- **SQL-Dumps**: ✅ `infra/DB/game/servers/dev/` enthält Dump-Struktur
+- **SQL-Dumps**: ✅ `infra/DB/game/servers/dev/` enthält Dump-Struktur für Initialisierung
 - **Legacy-Analyse**: ✅ Umfassend dokumentiert in `infra/DB/docs/LEGACY_ANALYSIS.md`
 - **Tabellenstruktur**:
   - MyISAM-Engine (keine Foreign Keys)
@@ -404,8 +405,8 @@ npm run type-check   # tsc --noEmit
 
 ### Sicherheitsrisiken
 
-1. **JWT_SECRET Default**: Dev-Default "dev-secret" ist unsicher (Datei: `src/config/env.ts:63`)
-2. **Admin-Credentials**: Hardcoded "admin/admin" als Default (Datei: `src/config/env.ts:66-67`)
+1. **JWT_SECRET Default**: Dev-Default "dev-secret" ist unsicher (Dateien: `src/app.module.ts:22`, `src/config/env.ts:63`)
+2. **Admin-Credentials**: Hardcoded "admin/admin" als Default (Dateien: `src/app.module.ts:24-25`, `src/config/env.ts:66-67`)
 3. **CORS-Config**: Nur localhost erlaubt, keine Produktions-Domain (Datei: `src/main.ts:33`)
 4. **Alle Ports exponiert**: Docker-Compose exponiert MySQL, Redis, Adminer direkt (Datei: `infra/docker-compose.yml`)
 5. **Fehlende Dockerfiles**: Build-Security nicht validierbar (Datei: `infra/docker-compose.yml:55-57, 101-104`)
@@ -475,8 +476,8 @@ npm run type-check   # tsc --noEmit
 | Risiko | Fundstelle | Impact | Beschreibung |
 |--------|-----------|--------|--------------|
 | **Fehlende Dockerfiles** | `infra/docker-compose.yml:56, 102` | H | API und Web referenzieren nicht-existierende Dockerfiles → Build schlägt fehl |
-| **JWT_SECRET ohne Enforcement** | `tools/apps/dlc-api/src/config/env.ts:63` | M | Default "dev-secret" ist unsicher, sollte zwingend gesetzt werden |
-| **Admin-Credentials Hardcoded** | `tools/apps/dlc-api/src/config/env.ts:66-67` | M | Default admin/admin ist unsicher |
+| **JWT_SECRET ohne Enforcement** | `src/app.module.ts:22`, `src/config/env.ts:63` | M | Default "dev-secret" ist unsicher, sollte zwingend gesetzt werden |
+| **Admin-Credentials Hardcoded** | `src/app.module.ts:24-25`, `src/config/env.ts:66-67` | M | Default admin/admin ist unsicher |
 | **Alle Ports exponiert** | `infra/docker-compose.yml` | M | MySQL, Redis, Adminer direkt zugänglich |
 
 ### Build (Kritisch)
@@ -499,7 +500,7 @@ npm run type-check   # tsc --noEmit
 
 | Risiko | Fundstelle | Impact | Beschreibung |
 |--------|-----------|--------|--------------|
-| **Keine Migrations** | `tools/apps/dlc-api/src/` | L | DB-Schema-Änderungen nicht versioniert |
+| **Keine TypeORM-Code-Migrations** | `tools/apps/dlc-api/migrations/` | L | Nur SQL-Dumps, keine versionierten TypeORM-Migrations |
 | **Monorepo ohne Root-Package.json** | `/` | L | Keine zentrale Workspace-Verwaltung |
 
 ### Developer Experience (DX)
@@ -555,10 +556,10 @@ npm run type-check   # tsc --noEmit
 | Maßnahme | Impact | Aufwand | Owner | Referenz | Messbar |
 |----------|--------|---------|-------|----------|---------|
 | **Dockerfiles erstellen** | H | L | DevOps | `infra/docker-compose.yml:56, 102` | ✅ `docker-compose build` erfolgreich |
-| **JWT_SECRET Enforcement** | H | L | Backend | `src/config/env.ts:63` | ✅ API startet nur mit gesetztem JWT_SECRET |
+| **JWT_SECRET Enforcement** | H | L | Backend | `src/app.module.ts:22`, `src/config/env.ts:63` | ✅ API startet nur mit gesetztem JWT_SECRET |
 | **Root-package.json + Workspaces** | M | L | Tech Lead | `/` | ✅ `pnpm install` im Root funktioniert |
 | **CORS-Produktions-Config** | M | L | Backend | `src/main.ts:33` | ✅ Umgebungs-Variable für CORS_ORIGIN |
-| **Admin-Credentials aus Env** | M | L | Backend | `src/config/env.ts:66-67` | ✅ ADMIN_USERNAME/PASSWORD aus Env gelesen |
+| **Admin-Credentials aus Env** | M | L | Backend | `src/app.module.ts:24-25`, `src/config/env.ts:66-67` | ✅ ADMIN_USERNAME/PASSWORD aus Env gelesen |
 | **.gitignore für Shared-Libs** | L | L | Tech Lead | `tools/shared/` | ✅ dist/ ignoriert |
 
 ### Next 30 Tage (Strukturell)
@@ -568,7 +569,7 @@ npm run type-check   # tsc --noEmit
 | **GitHub Actions CI/CD** | H | M | DevOps | `.github/workflows/` | ✅ Automatisierte Tests bei PR |
 | **ESLint + Prettier Monorepo** | M | M | Tech Lead | Monorepo-Root | ✅ `pnpm lint` im Root |
 | **Frontend-Tests (Jest/Testing Library)** | M | M | Frontend | `tools/apps/dlc-web-admin/` | ✅ >50% Coverage |
-| **DB-Migrations einführen** | M | H | Backend | `tools/apps/dlc-api/src/migrations/` | ✅ TypeORM-Migrations vorhanden |
+| **TypeORM-Code-Migrations** | M | H | Backend | `tools/apps/dlc-api/migrations/` | ✅ TypeORM-Code-Migrations statt SQL-Dumps |
 | **API-Dokumentation (Swagger)** | M | M | Backend | `tools/apps/dlc-api/src/` | ✅ Swagger UI unter `/api-docs` |
 | **Dependency-Updates (Renovate)** | L | L | DevOps | `.github/renovate.json` | ✅ Automatische PRs |
 | **Security-Scan (Snyk/Dependabot)** | M | L | DevOps | `.github/` | ✅ Wöchentliche Scans |
