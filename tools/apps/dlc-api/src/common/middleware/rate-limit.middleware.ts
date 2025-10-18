@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 
 @Injectable()
 export class RateLimitMiddleware implements NestMiddleware {
@@ -7,13 +7,13 @@ export class RateLimitMiddleware implements NestMiddleware {
   private readonly WINDOW_MS = 60 * 1000; // 1 Minute
   private readonly MAX_REQUESTS = 100;
 
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: FastifyRequest, res: FastifyReply, next: () => void) {
     const ip = req.ip;
     const now = Date.now();
     const count = this.requests.get(ip) || 0;
 
     if (count >= this.MAX_REQUESTS) {
-      res.status(429).json({ message: 'Too many requests – try again later.' });
+      res.status(429).send({ message: 'Too many requests – try again later.' });
       return;
     }
 

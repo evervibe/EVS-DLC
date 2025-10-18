@@ -1,28 +1,32 @@
 # EVS-DLC - EverVibe Studios DLC Development Ecosystem
 
-**Version:** 1.1.0 (Full Integration Release)  
+**Version:** 1.2.0-stable  
 **Status:** ✅ Production-Ready
 
 Complete development ecosystem for DLC content management, featuring a modern NestJS backend API and Next.js frontend admin interface with unified monorepo architecture.
 
 ---
 
-## 🎯 What's New in v1.1.0
+## 🎯 What's New in v1.2.0-stable
 
 ### ✨ Major Achievements
-- ✅ **100% Migration Complete:** All core features migrated from Vite to Next.js 15
-- 📦 **Shared Libraries:** Centralized API client and type definitions
-- 🎨 **Complete UI:** Dashboard + 4 CRUD pages (Items, Skills, Skill Levels, Strings)
-- 🔧 **Backend v0.9.5:** Validated and production-ready
-- 📚 **Documentation:** Comprehensive migration and validation documentation
-- ⚡ **Performance:** Optimized build pipeline with 9 pages
+- ✅ **Legacy Cleanup:** Removed old dlc-dev-studios frontend (replaced with dlc-web-admin)
+- ✅ **Fastify-Only Backend:** Eliminated Express dependencies, pure Fastify stack
+- ✅ **RBAC Implementation:** Role-Based Access Control with User, Admin, DevOps roles
+- ✅ **Production Infrastructure:** Complete Docker Compose orchestration with health checks
+- ✅ **CI/CD Pipeline:** Automated build, test, and deployment with GitHub Actions
+- ✅ **Security Hardening:** JWT authentication, rate limiting, Helmet security headers
+- ✅ **Version Unification:** All packages updated to 1.2.0
+- ✅ **Complete Documentation:** Architecture overview and production deployment guides
 
 ### 🏗️ Current Architecture
-- **Backend:** NestJS 10 + Fastify 4 (v0.9.5)
+- **Backend:** NestJS 10 + Fastify 4 (v1.2.0)
 - **Frontend:** Next.js 15 + React 19 (v1.2.0)
 - **Shared Libraries:** Unified API client and types (v1.0.0)
-- **Workspace:** pnpm monorepo with 4 packages
-- **Documentation:** 25+ comprehensive guides
+- **Infrastructure:** Docker Compose with MySQL 8, Redis 7
+- **Security:** JWT + RBAC with role hierarchy
+- **CI/CD:** GitHub Actions pipeline
+- **Documentation:** Complete architecture and deployment guides
 
 ---
 
@@ -33,29 +37,49 @@ Complete development ecosystem for DLC content management, featuring a modern Ne
 - **Docker** & Docker Compose
 - **MySQL** 8.0+ (via Docker)
 
-### Start All Services
+### Development Mode
 
 ```bash
-# 1. Start MySQL databases
+# 1. Install pnpm globally
+npm install -g pnpm@9.12.3
+
+# 2. Install all workspace dependencies
+pnpm install
+
+# 3. Start MySQL database (in new terminal)
 cd infra/DB/game
 cp .env.example .env
 docker compose up -d
 
-# 2. Install all workspace dependencies
-cd ../../
-pnpm install
-
-# 3. Start Backend API (in new terminal)
+# 4. Start Backend API (in new terminal)
 cd tools/apps/dlc-api
 cp .env.example .env  # Optional - has defaults!
 pnpm dev
 
-# 4. Start Frontend (in new terminal) 
+# 5. Start Frontend (in new terminal) 
 cd tools/apps/dlc-web-admin
 cp .env.example .env.local  # Optional - has defaults!
 pnpm dev
 
-# 5. Open browser
+# 6. Open browser
+open http://localhost:5174
+```
+
+### Production Mode (Docker Compose)
+
+```bash
+# 1. Configure environment
+cp .env.production.example .env.production
+# Edit .env.production with secure credentials
+
+# 2. Start all services
+cd infra
+docker compose up -d
+
+# 3. Check health
+curl http://localhost:30089/health
+
+# 4. Access applications
 open http://localhost:5174
 ```
 
@@ -65,14 +89,19 @@ open http://localhost:5174
 
 ## 📚 Documentation
 
-Comprehensive guides available in `/docs/`:
+Comprehensive guides available in `/docs/` and root:
 
-### Architecture & Migration
-- **[Implementation Summary v1.1.0](./docs/IMPLEMENTATION_SUMMARY_V1.1.0.md)** - Complete v1.1.0 overview
-- **[Migration Log v1.1.0](./docs/MIGRATION_LOG_V1.1.0.md)** - Full migration documentation
-- **[Legacy Removal Log v1.1.0](./docs/LEGACY_REMOVAL_LOG_v1.1.0.md)** - Legacy code removal tracking
-- **[Repository Structure Analysis](./docs/REPOSITORY_STRUCTURE_ANALYSIS.md)** - Complete repository analysis
+### Architecture & Overview
+- **[Architecture Overview](./ARCHITECTURE_OVERVIEW.md)** - Complete system architecture v1.2.0
+- **[Implementation Summary v1.1.0](./docs/IMPLEMENTATION_SUMMARY_V1.1.0.md)** - v1.1.0 overview
+- **[Migration Log v1.1.0](./docs/MIGRATION_LOG_V1.1.0.md)** - Migration tracking
+- **[Repository Structure Analysis](./docs/REPOSITORY_STRUCTURE_ANALYSIS.md)** - Repository analysis
 - **[Environment Matrix](./docs/ENVIRONMENT_MATRIX.md)** - Environment variable reference
+
+### Production Deployment
+- **[.env.production.example](./.env.production.example)** - Production environment template
+- **[Docker Compose](./infra/docker-compose.yml)** - Complete infrastructure orchestration
+- **[CI/CD Pipeline](./.github/workflows/ci.yml)** - Automated build and deployment
 
 ### Component Documentation
 - **[DLC API Overview](./docs/DLC_API_OVERVIEW.md)** - Backend API documentation
@@ -105,12 +134,14 @@ Comprehensive guides available in `/docs/`:
 
 ## 🔧 Technology Stack
 
-### Backend (DLC API v0.9.5)
-- **Framework:** NestJS 10.4.20 with Fastify adapter
+### Backend (DLC API v1.2.0)
+- **Framework:** NestJS 10.4.20 with Fastify adapter (pure Fastify, no Express)
 - **Language:** TypeScript 5.3.3
 - **ORM:** TypeORM 0.3.27
 - **Database:** MySQL 8.0
+- **Cache:** Redis 7 (ioredis 5.8.1)
 - **Security:** @fastify/helmet 11.0.0, @fastify/rate-limit 10.3.0
+- **Auth:** JWT (jsonwebtoken 9.0.2) with RBAC
 - **Validation:** Joi 18.0.1 + class-validator 0.14.2
 - **Location:** `tools/apps/dlc-api/`
 
@@ -130,10 +161,12 @@ Comprehensive guides available in `/docs/`:
 
 ### Infrastructure
 - **Database:** MySQL 8.0 (Docker)
-- **Cache:** Redis 7 (prepared for future)
+- **Cache:** Redis 7 (Docker)
 - **Admin UI:** Adminer 4
+- **Orchestration:** Docker Compose
+- **CI/CD:** GitHub Actions
 - **Workspace:** pnpm 9.12.3
-- **Location:** `infra/DB/game/`
+- **Location:** `infra/`
 
 ---
 
@@ -150,20 +183,22 @@ EVS-DLC/
 │   ├── ENVIRONMENT_MATRIX.md              # Environment variables
 │   ├── DLC_API_OVERVIEW.md                # Backend documentation
 │   ├── DLC_WEB_ADMIN_OVERVIEW.md          # Frontend documentation
-│   ├── SYSTEM_HEALTH_CHECK.md
-│   ├── BACKEND_BOOT_FLOW.md
 │   └── ... (25+ documentation files)
 │
 ├── infra/                                  # Infrastructure
+│   ├── docker-compose.yml                  # Production orchestration (NEW v1.2.0)
 │   └── DB/
 │       └── game/                           # MySQL databases
-│           ├── docker-compose.yml          # Docker setup
+│           ├── docker-compose.yml          # Development database setup
 │           └── .env.example                # Configuration template
 │
 ├── tools/                                  # Application workspace
 │   ├── apps/
-│   │   ├── dlc-api/                        # Backend API (v0.9.5)
-│   │   │   ├── src/                        # Source code
+│   │   ├── dlc-api/                        # Backend API (v1.2.0)
+│   │   │   ├── src/
+│   │   │   │   ├── common/rbac/            # RBAC system (NEW v1.2.0)
+│   │   │   │   ├── modules/                # Feature modules
+│   │   │   │   └── main.ts                 # Entry point
 │   │   │   ├── .env.example                # Configuration template
 │   │   │   └── package.json                # Dependencies
 │   │   │
@@ -187,6 +222,12 @@ EVS-DLC/
 │       └── ui/                             # Shared UI (prepared)
 │           └── package.json
 │
+├── .github/
+│   └── workflows/
+│       └── ci.yml                          # CI/CD pipeline (NEW v1.2.0)
+│
+├── ARCHITECTURE_OVERVIEW.md                # System architecture (NEW v1.2.0)
+├── .env.production.example                 # Production config (NEW v1.2.0)
 ├── pnpm-workspace.yaml                     # Workspace configuration
 ├── LICENSE_CUSTOM.md                       # EverVibe Studios license
 └── README.md                               # This file
@@ -414,34 +455,37 @@ pnpm start
 
 ## 🗺️ Roadmap
 
-### v1.1.0 (Current - Complete ✅)
-- ✅ Backend v0.9.5 production-ready
-- ✅ Next.js 15 with 9 pages
-- ✅ pnpm workspace with 4 packages
-- ✅ Shared libraries infrastructure
-- ✅ Complete documentation (25+ files)
-- ✅ All builds passing with 0 errors
+### v1.2.0 (Current - Complete ✅)
+- ✅ Legacy cleanup (removed dlc-dev-studios)
+- ✅ Fastify-only backend (removed Express)
+- ✅ RBAC implementation (User, Admin, DevOps)
+- ✅ Production infrastructure (Docker Compose)
+- ✅ CI/CD pipeline (GitHub Actions)
+- ✅ Security hardening (JWT + rate limiting)
+- ✅ Version unification (all packages 1.2.0)
+- ✅ Complete documentation
 
-### v1.2.0 (Next Release - Planned)
-- 🚧 Create/Edit/Delete modals
+### v1.3.0 (Next Release - Planned)
+- 🚧 Create/Edit/Delete modals with validation
 - 🚧 Toast notification system
-- 🚧 Inline editing
-- 🚧 Form validation
-- 🚧 Optimistic updates
+- 🚧 Inline editing for quick updates
+- 🚧 Advanced form validation
+- 🚧 Optimistic UI updates
+- 🚧 Full authentication UI
 
-### v1.3.0 (Future)
-- ✨ Authentication system
-- ✨ User management
-- ✨ Role-based access control
-- ✨ Redis cache integration
-- ✨ Enhanced health metrics
+### v1.4.0 (Future)
+- ✨ User management interface
+- ✨ Password reset flow
+- ✨ Two-factor authentication
+- ✨ Audit logging system
+- ✨ Enhanced monitoring dashboard
 
 ### v2.0.0 (Vision)
-- 🔐 Full RBAC implementation
-- 🔐 JWT token validation
-- 📊 Performance monitoring
-- 🚀 Auto-scaling support
-- 🎨 Advanced UI features
+- 🔐 Advanced RBAC with custom permissions
+- 📊 Performance monitoring and metrics
+- 🚀 Kubernetes deployment support
+- 🎨 Advanced UI features and themes
+- 🌐 Multi-language support
 
 ---
 
@@ -492,20 +536,20 @@ All rights reserved.
 
 ## 🎯 Key Achievements
 
-✅ **100% Migration Complete** - All core features migrated to Next.js 15  
-✅ **Zero Build Errors** - Frontend and backend build successfully  
-✅ **Complete Documentation** - 25+ comprehensive guides  
-✅ **Shared Libraries** - Unified API client and types  
-✅ **9 Functional Pages** - Dashboard + 4 CRUD modules + home  
-✅ **Health Monitoring** - Real-time system status  
-✅ **Production Ready** - Fully tested and validated  
-✅ **Modern Stack** - Next.js 15, React 19, NestJS 10  
-✅ **Type-Safe** - Full TypeScript coverage  
-✅ **Security Validated** - 0 vulnerabilities found  
+✅ **Clean Monorepo Structure** - Single frontend (dlc-web-admin), legacy removed  
+✅ **Pure Fastify Backend** - No Express dependencies, fully optimized  
+✅ **RBAC Security** - Role-Based Access Control with hierarchy  
+✅ **Production Infrastructure** - Complete Docker Compose orchestration  
+✅ **CI/CD Pipeline** - Automated build, test, and deployment  
+✅ **Zero Build Errors** - All packages build successfully  
+✅ **Complete Documentation** - Architecture overview and deployment guides  
+✅ **Version Unified** - All packages at 1.2.0  
+✅ **Security Hardened** - JWT authentication, rate limiting, Helmet  
+✅ **Type-Safe** - Full TypeScript coverage across all components  
 
-**Status:** Ready for production deployment! 🚀
+**Status:** Production-ready and deployment-ready! 🚀
 
 ---
 
 **Built with ❤️ by EverVibe Studios**  
-**Version:** 1.1.0 | **Updated:** 2025-10-18
+**Version:** 1.2.0-stable | **Updated:** 2025-10-18
