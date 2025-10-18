@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-10-18
+
+### Added
+- Count endpoints for all data resources (`/data/t_item/count`, `/data/t_skill/count`, `/data/t_skilllevel/count`, `/data/t_string/count`)
+- Optional `/game/*` aliases for backward compatibility (`/game/items`, `/game/skills`, `/game/skilllevels`, `/game/strings`)
+- Database seed helper script (`infra/DB/seed-dev.sh`) for local development
+- API e2e tests for count endpoints
+- Centralized API endpoints configuration in shared library
+
+### Changed
+- Dashboard now uses `/count` endpoints for accurate resource counts
+- Updated shared lib API client to support count endpoints
+- Improved test setup with required environment variables
+
+### Fixed
+- Aligned frontend routes with backend `/data/*` resources
+- Removed hardcoded test limits in game service
+- React list key warning resolved (stable keys already present)
+- Game service now properly delegates to data services instead of returning mock data
+- Test environment configuration for JWT_SECRET and admin credentials
+
 ## [1.3.0] - 2025-10-18
 
 ### Added

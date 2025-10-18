@@ -118,4 +118,88 @@ describe('Data Endpoints (e2e)', () => {
       expect(Array.isArray(data)).toBe(true);
     });
   });
+
+  describe('/data/t_item/count (GET)', () => {
+    it('should return count of items', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_item/count',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.payload);
+      expect(body).toHaveProperty('data');
+      expect(body.data).toHaveProperty('count');
+      expect(typeof body.data.count).toBe('number');
+      expect(body.data.count).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('/data/t_skill/count (GET)', () => {
+    it('should return count of skills', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_skill/count',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.payload);
+      expect(body).toHaveProperty('data');
+      expect(body.data).toHaveProperty('count');
+      expect(typeof body.data.count).toBe('number');
+      expect(body.data.count).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('/data/t_skilllevel/count (GET)', () => {
+    it('should return count of skill levels', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_skilllevel/count',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.payload);
+      expect(body).toHaveProperty('data');
+      expect(body.data).toHaveProperty('count');
+      expect(typeof body.data.count).toBe('number');
+      expect(body.data.count).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('/data/t_string/count (GET)', () => {
+    it('should return count of strings', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_string/count',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.payload);
+      expect(body).toHaveProperty('data');
+      expect(body.data).toHaveProperty('count');
+      expect(typeof body.data.count).toBe('number');
+      expect(body.data.count).toBeGreaterThanOrEqual(0);
+    });
+  });
 });

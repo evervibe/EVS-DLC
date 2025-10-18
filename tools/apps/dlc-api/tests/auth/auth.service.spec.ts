@@ -18,11 +18,11 @@ describe('AuthService', () => {
 
   it('should login with valid credentials', async () => {
     const result = await service.login({
-      username: 'demo',
-      password: 'demo',
+      username: 'test-admin',
+      password: 'test-password',
     });
     expect(result).toBeDefined();
     expect(result.token).toBeDefined();
-    expect(result.user.username).toBe('demo');
+    expect(result.user.username).toBe('test-admin');
   });
 });
