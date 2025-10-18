@@ -1,6 +1,6 @@
 # --- deps ---
 FROM node:20-alpine AS deps
-RUN corepack enable || npm config set strict-ssl false && npm install -g pnpm@9.12.3
+RUN corepack enable
 WORKDIR /workspace
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY tools/apps/dlc-web-admin/package.json tools/apps/dlc-web-admin/
@@ -10,7 +10,7 @@ RUN pnpm install --frozen-lockfile --filter dlc-web-admin...
 
 # --- build ---
 FROM node:20-alpine AS build
-RUN corepack enable || npm config set strict-ssl false && npm install -g pnpm@9.12.3
+RUN corepack enable
 WORKDIR /workspace
 COPY . .
 COPY --from=deps /workspace/node_modules ./node_modules
