@@ -1,6 +1,6 @@
 {
   "name": "dlc-web-admin",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "private": true,
   "description": "DLC Web Admin Interface - Next.js 15 + Tailwind",
   "scripts": {

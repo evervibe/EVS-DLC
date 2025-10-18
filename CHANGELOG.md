@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-10-18
+
+### Added
+- **Localization Editor Suite** with complete workflow management for `t_string`
+- `LANG_MAP` constant with 26 language support (usa, ger, spn, frc, rus, kor, twn, chn, thai, jpn, mal, brz, hk, pld, tur, ita, mex, nld, uk, dev, and variants)
+- i18n validation helpers for string length, control characters, placeholder consistency
+- `dlc_string_meta` table for workflow tracking (draft → review → approved)
+- Database migration `CreateStringMeta1700000000000` for metadata table
+- New `/strings` API module with enhanced CRUD, filtering, and workflow endpoints
+- Role-based access control (RBAC) with Editor, Reviewer, Publisher roles
+- Workflow endpoints: submit-review, approve, reject with audit trail
+- Bulk CSV/XLSX import with dry-run mode and diff preview
+- Deterministic `.load` export with SHA1 hash and manifest.json generation
+- Export files saved to `infra/exports/strings/<version>/` with metadata
+- Enhanced web UI for strings management with status/language filters
+- Pagination controls for large datasets
+- Placeholder pages for review queue, import wizard, and export wizard
+- Server actions for strings operations with proper authentication
+- E2E tests for strings endpoints (list, detail, update validation, export preview)
+- Enhanced shared lib API helpers: `getJSON`, `postJSON`, `putJSON`, `deleteJSON`, `uploadFile`
+
+### Changed
+- Strings list page now uses new `/strings` endpoint instead of `/data/t_string`
+- Filters include workflow status (draft/review/approved) and missing language detection
+- All strings operations route through SSR auth proxy at `/api/dlc/strings/*`
+- TypeORM configuration in API includes paths for shared-lib imports
+- Web admin tsconfig includes path mapping for `@evs-dlc/shared-lib`
+- Added `@nestjs/platform-express`, `multer`, and `@types/multer` for file upload support
+
+### Fixed
+- Type safety for language columns and locale mappings
+- Button and Card component variant type errors in web UI
+- Shared lib fetch cache property compatibility with non-Next.js environments
+
+### Security
+- All strings CRUD operations protected by JWT authentication
+- Role-based access: Editors can create/update, Reviewers can approve/reject, Publishers can export
+- Public count endpoint `/data/t_string/count` remains unchanged for dashboard
+- Validation prevents oversized strings, control characters, and encoding issues
+- Audit trail tracks all changes with user ID, timestamp, and version history
+
 ## [1.3.4] - 2025-10-18
 
 ### Added

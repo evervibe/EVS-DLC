@@ -8,6 +8,7 @@ import { DataModule } from './modules/data/data.module';
 import { PostModule } from './modules/post/post.module';
 import { HealthModule } from './modules/health/health.module';
 import { OpsModule } from './modules/ops/ops.module';
+import { StringsModule } from './modules/strings/strings.module';
 import { GlobalExceptionFilter, NotFoundExceptionFilter } from './common/errors';
 import { RedisModule } from './core/redis/redis.module';
 import { CacheModule } from './core/cache/cache.module';
@@ -69,6 +70,7 @@ import { CacheModule } from './core/cache/cache.module';
     PostModule,
     HealthModule,
     OpsModule,
+    StringsModule,
   ],
   providers: [
     {
