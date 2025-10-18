@@ -29,8 +29,8 @@ describe('Data Endpoints (e2e)', () => {
     }
   });
 
-  describe('/data/t_item (GET)', () => {
-    it('should return 200 OK', async () => {
+  describe('/data/t_item (GET) - Protected', () => {
+    it('should return 401 without authentication', async () => {
       if (!app) {
         console.log('Skipping test - app not initialized');
         return;
@@ -41,14 +41,52 @@ describe('Data Endpoints (e2e)', () => {
         url: '/data/t_item',
       });
 
+      // Should require authentication for list endpoints
+      expect([401, 403]).toContain(response.statusCode);
+    });
+
+    it('should return 200 with valid token', async () => {
+      if (!app) {
+        console.log('Skipping test - app not initialized');
+        return;
+      }
+
+      // Login to get token
+      const loginResponse = await app.inject({
+        method: 'POST',
+        url: '/auth/login',
+        payload: {
+          username: process.env.ADMIN_USERNAME || 'admin',
+          password: process.env.ADMIN_PASSWORD || 'change-me',
+        },
+      });
+
+      expect(loginResponse.statusCode).toBe(200);
+      const loginData = JSON.parse(loginResponse.payload);
+      const token = loginData?.data?.token || loginData?.data?.access_token || loginData?.token || loginData?.access_token;
+      
+      if (!token) {
+        console.log('Skipping test - no token received');
+        return;
+      }
+
+      // Use token to access protected endpoint
+      const response = await app.inject({
+        method: 'GET',
+        url: '/data/t_item',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
       expect(response.statusCode).toBe(200);
       const data = JSON.parse(response.payload);
-      expect(Array.isArray(data)).toBe(true);
+      expect(data).toHaveProperty('data');
     });
   });
 
-  describe('/data/t_string (GET)', () => {
-    it('should return 200 OK', async () => {
+  describe('/data/t_string (GET) - Protected', () => {
+    it('should return 401 without authentication', async () => {
       if (!app) {
         console.log('Skipping test - app not initialized');
         return;
@@ -59,14 +97,13 @@ describe('Data Endpoints (e2e)', () => {
         url: '/data/t_string',
       });
 
-      expect(response.statusCode).toBe(200);
-      const data = JSON.parse(response.payload);
-      expect(Array.isArray(data)).toBe(true);
+      // Should require authentication for list endpoints
+      expect([401, 403]).toContain(response.statusCode);
     });
   });
 
-  describe('/data/t_skill (GET)', () => {
-    it('should return 200 OK', async () => {
+  describe('/data/t_skill (GET) - Protected', () => {
+    it('should return 401 without authentication', async () => {
       if (!app) {
         console.log('Skipping test - app not initialized');
         return;
@@ -77,14 +114,13 @@ describe('Data Endpoints (e2e)', () => {
         url: '/data/t_skill',
       });
 
-      expect(response.statusCode).toBe(200);
-      const data = JSON.parse(response.payload);
-      expect(Array.isArray(data)).toBe(true);
+      // Should require authentication for list endpoints
+      expect([401, 403]).toContain(response.statusCode);
     });
   });
 
-  describe('/data/t_skilllevel (GET)', () => {
-    it('should return 200 OK', async () => {
+  describe('/data/t_skilllevel (GET) - Protected', () => {
+    it('should return 401 without authentication', async () => {
       if (!app) {
         console.log('Skipping test - app not initialized');
         return;
@@ -95,14 +131,13 @@ describe('Data Endpoints (e2e)', () => {
         url: '/data/t_skilllevel',
       });
 
-      expect(response.statusCode).toBe(200);
-      const data = JSON.parse(response.payload);
-      expect(Array.isArray(data)).toBe(true);
+      // Should require authentication for list endpoints
+      expect([401, 403]).toContain(response.statusCode);
     });
   });
 
-  describe('/data/t_character (GET)', () => {
-    it('should return 200 OK', async () => {
+  describe('/data/t_character (GET) - Protected', () => {
+    it('should return 401 without authentication', async () => {
       if (!app) {
         console.log('Skipping test - app not initialized');
         return;
@@ -113,9 +148,8 @@ describe('Data Endpoints (e2e)', () => {
         url: '/data/t_character',
       });
 
-      expect(response.statusCode).toBe(200);
-      const data = JSON.parse(response.payload);
-      expect(Array.isArray(data)).toBe(true);
+      // Should require authentication for list endpoints
+      expect([401, 403]).toContain(response.statusCode);
     });
   });
 

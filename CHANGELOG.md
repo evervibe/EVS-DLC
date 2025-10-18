@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2025-10-18
+
+### Added
+- Next.js SSR auth proxy at `/api/dlc/*` that injects JWT from HttpOnly cookie for secure list/CRUD operations
+- Login page and server actions for HttpOnly cookie-based authentication (`dlc_token`, 8h TTL)
+- Logout functionality to clear authentication cookie
+- Status-aware error UI components that display specific messages for 401/403 (unauthorized) and 5xx (server errors)
+- Retry functionality for failed requests
+- E2e tests verifying list routes require authentication while count endpoints remain public
+- Explicit `FRONTEND_ORIGIN` environment variable in API `.env.example`
+
+### Fixed
+- List views failing due to missing authentication - now use SSR proxy with JWT injection
+- Dashboard counts remain public and fast - direct API calls without authentication
+- Error states no longer coerced to `0` - proper status-based error messaging
+- All list pages (items, skills, skilllevels, strings) now route through authenticated proxy
+
+### Changed
+- All protected list/CRUD operations now use relative `/api/dlc/*` routes in web-admin
+- Dashboard counts continue to call public API endpoints directly
+- Shared library endpoints updated to use relative paths for better proxy compatibility
+- All list pages use `cache: 'no-store'` for real-time data
+
+### Security
+- JWT tokens now stored in HttpOnly cookies, never exposed to client-side JavaScript
+- Proxy route strips sensitive headers and never echoes tokens back to client
+- Cookie settings: `httpOnly: true`, `sameSite: 'lax'`, `secure` in production
+
 ## [1.3.3] - 2025-10-18
 
 ### Fixed

@@ -19,7 +19,7 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="text-sm text-gray-500">
-          Version 1.3.0 - Next.js 15 + React 19
+          Version 1.3.4 - Next.js 15 + React 19
         </div>
       </div>
     </div>

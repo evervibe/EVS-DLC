@@ -16,7 +16,7 @@ describe('HomePage', () => {
 
   it('displays correct version', () => {
     render(<HomePage />);
-    expect(screen.getByText(/Version 1.3.0/i)).toBeInTheDocument();
+    expect(screen.getByText(/Version 1.3.4/i)).toBeInTheDocument();
   });
 
   it('has link to dashboard', () => {

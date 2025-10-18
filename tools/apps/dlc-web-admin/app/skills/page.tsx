@@ -5,17 +5,21 @@ import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader } from '@/components/ui/loader';
-import { ErrorBox } from '@/components/ui/error-box';
+import { StatusError } from '@/components/ui/status-error';
 import { ApiOfflineNotice } from '@/components/feedback/api-offline-notice';
 import { Zap, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 async function fetchSkills() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:30089';
-  const response = await fetch(`${baseUrl}/data/t_skill`);
+  const response = await fetch('/api/dlc/data/t_skill', {
+    cache: 'no-store',
+  });
   
   if (!response.ok) {
-    throw new Error('Failed to fetch skills');
+    const error: any = new Error('Failed to fetch skills');
+    error.status = response.status;
+    error.statusText = response.statusText;
+    throw error;
   }
   
   const result = await response.json();
@@ -32,7 +36,7 @@ async function fetchSkills() {
 
 export default function SkillsPage() {
   const [search, setSearch] = useState('');
-  const { data: skills, isLoading, error } = useQuery({
+  const { data: skills, isLoading, error, refetch } = useQuery({
     queryKey: ['skills'],
     queryFn: fetchSkills,
   });
@@ -87,9 +91,10 @@ export default function SkillsPage() {
           )}
 
           {error && (
-            <ErrorBox title="Failed to load skills">
-              {error instanceof Error ? error.message : 'Unknown error occurred'}
-            </ErrorBox>
+            <StatusError 
+              error={error instanceof Error ? error : new Error('Unknown error occurred')}
+              onRetry={() => refetch()}
+            />
           )}
 
           {!isLoading && !error && (
