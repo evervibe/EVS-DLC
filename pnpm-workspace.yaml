@@ -1,0 +1,9 @@
+# pnpm Workspace Configuration
+# EVS-DLC Repository - v1.0.0
+
+packages:
+  # All applications
+  - 'tools/apps/*'
+  
+  # Shared libraries (to be created)
+  - 'tools/shared/*'
