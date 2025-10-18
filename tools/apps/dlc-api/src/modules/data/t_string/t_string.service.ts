@@ -55,6 +55,15 @@ export class TStringService {
     }, 120);
   }
 
+  async count(): Promise<{ count: number }> {
+    const cacheKey = 't_string:count';
+    return this.cache.wrap(cacheKey, async () => {
+      this.logger.debug('Counting string resources');
+      const count = await this.repository.count();
+      return { count };
+    }, 300);
+  }
+
   async findOne(id: number): Promise<TStringEntity> {
     this.logger.debug('Fetching string resource by id', { id });
     const entity = await this.repository.findOne({ where: { a_index: id } as any });

@@ -27,6 +27,12 @@ export class TItemController {
     return buildSuccessResponse(result.data, undefined, result.meta);
   }
 
+  @Get('count')
+  async count() {
+    const result = await this.service.count();
+    return buildSuccessResponse(result);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const item = await this.service.findOne(id);

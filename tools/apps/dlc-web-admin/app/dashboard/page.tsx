@@ -11,17 +11,27 @@ async function fetchStats() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:30089';
   
   const [itemsRes, skillsRes, skillLevelsRes, stringsRes] = await Promise.allSettled([
-    fetch(`${baseUrl}/game/items`).then(r => r.json()),
-    fetch(`${baseUrl}/game/skills`).then(r => r.json()),
-    fetch(`${baseUrl}/game/skilllevels`).then(r => r.json()),
-    fetch(`${baseUrl}/game/strings`).then(r => r.json()),
+    fetch(`${baseUrl}/data/t_item/count`).then(r => r.json()),
+    fetch(`${baseUrl}/data/t_skill/count`).then(r => r.json()),
+    fetch(`${baseUrl}/data/t_skilllevel/count`).then(r => r.json()),
+    fetch(`${baseUrl}/data/t_string/count`).then(r => r.json()),
   ]);
 
+  const extractCount = (res: any) => {
+    if (res.status !== 'fulfilled') return 0;
+    const val = res.value;
+    // Handle wrapped response format: { success: true, data: { count: X } }
+    if (val?.data?.count !== undefined) return val.data.count;
+    // Handle direct response format: { count: X }
+    if (val?.count !== undefined) return val.count;
+    return 0;
+  };
+
   return {
-    items: itemsRes.status === 'fulfilled' ? (Array.isArray(itemsRes.value) ? itemsRes.value.length : 0) : 0,
-    skills: skillsRes.status === 'fulfilled' ? (Array.isArray(skillsRes.value) ? skillsRes.value.length : 0) : 0,
-    skillLevels: skillLevelsRes.status === 'fulfilled' ? (Array.isArray(skillLevelsRes.value) ? skillLevelsRes.value.length : 0) : 0,
-    strings: stringsRes.status === 'fulfilled' ? (Array.isArray(stringsRes.value) ? stringsRes.value.length : 0) : 0,
+    items: extractCount(itemsRes),
+    skills: extractCount(skillsRes),
+    skillLevels: extractCount(skillLevelsRes),
+    strings: extractCount(stringsRes),
   };
 }
 

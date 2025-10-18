@@ -82,6 +82,16 @@ export async function getHealthReady() {
 }
 
 /**
+ * Canonical Endpoints for data resources
+ */
+export const Endpoints = {
+  items: { list: '/data/t_item', count: '/data/t_item/count' },
+  skills: { list: '/data/t_skill', count: '/data/t_skill/count' },
+  skilllevels: { list: '/data/t_skilllevel', count: '/data/t_skilllevel/count' },
+  strings: { list: '/data/t_string', count: '/data/t_string/count' }
+};
+
+/**
  * Generic CRUD Operations
  */
 export async function getAll<T>(resource: string): Promise<T[]> {
@@ -117,6 +127,21 @@ export async function remove(resource: string, id: number): Promise<void> {
 }
 
 /**
+ * Count API
+ */
+export async function getCount(endpoint: string): Promise<{ count: number }> {
+  const response = await fetchApi<any>(endpoint);
+  // Handle both direct count response and wrapped response
+  if (typeof response === 'object' && 'data' in response && typeof response.data === 'object' && 'count' in response.data) {
+    return { count: response.data.count };
+  }
+  if (typeof response === 'object' && 'count' in response) {
+    return { count: response.count };
+  }
+  return { count: 0 };
+}
+
+/**
  * Specific Resource APIs
  */
 
@@ -127,6 +152,7 @@ export const itemsApi = {
   create: (data: any) => create<any>('items', data),
   update: (id: number, data: any) => update<any>('items', id, data),
   delete: (id: number) => remove('items', id),
+  count: () => getCount(Endpoints.items.count),
 };
 
 // Skills
@@ -136,6 +162,7 @@ export const skillsApi = {
   create: (data: any) => create<any>('skills', data),
   update: (id: number, data: any) => update<any>('skills', id, data),
   delete: (id: number) => remove('skills', id),
+  count: () => getCount(Endpoints.skills.count),
 };
 
 // Skill Levels
@@ -145,6 +172,7 @@ export const skillLevelsApi = {
   create: (data: any) => create<any>('skilllevels', data),
   update: (id: number, data: any) => update<any>('skilllevels', id, data),
   delete: (id: number) => remove('skilllevels', id),
+  count: () => getCount(Endpoints.skilllevels.count),
 };
 
 // Strings
@@ -154,4 +182,5 @@ export const stringsApi = {
   create: (data: any) => create<any>('strings', data),
   update: (id: number, data: any) => update<any>('strings', id, data),
   delete: (id: number) => remove('strings', id),
+  count: () => getCount(Endpoints.strings.count),
 };
