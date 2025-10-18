@@ -41,7 +41,7 @@ export async function serverFetchJSON<T = any>(
   const res = await fetch(url, { cache: 'no-store', ...init });
   
   if (!res.ok) {
-    throw new Error(`${path} -> ${res.status}`);
+    throw new Error(`${path} -> ${res.status} ${res.statusText}`);
   }
   
   return res.json() as Promise<T>;

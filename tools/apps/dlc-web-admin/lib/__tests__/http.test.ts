@@ -24,8 +24,8 @@ describe('lib/http', () => {
     const originalWindow = global.window;
 
     beforeEach(() => {
-      // Simulate server-side environment
-      // @ts-ignore
+      // Simulate server-side environment by removing window object
+      // @ts-expect-error - Intentionally deleting window to simulate SSR environment
       delete global.window;
     });
 
@@ -89,8 +89,8 @@ describe('lib/http', () => {
     });
 
     beforeEach(() => {
-      // Simulate server-side environment
-      // @ts-ignore
+      // Simulate server-side environment by removing window object
+      // @ts-expect-error - Intentionally deleting window to simulate SSR environment
       delete global.window;
       global.fetch = jest.fn();
     });
@@ -120,9 +120,10 @@ describe('lib/http', () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 404,
+        statusText: 'Not Found',
       });
 
-      await expect(serverFetchJSON('/api/test')).rejects.toThrow('/api/test -> 404');
+      await expect(serverFetchJSON('/api/test')).rejects.toThrow('/api/test -> 404 Not Found');
     });
 
     it('should include custom fetch options', async () => {
